@@ -1,0 +1,62 @@
+# Use an official Ubuntu as a base image
+FROM nvidia/cuda:12.6.3-base-ubuntu24.04
+
+# Set environment variables to avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    cmake \
+    build-essential \
+    libgl1-mesa-dev \
+    libsdl2-dev \
+    libsdl2-image-dev \
+    libsdl2-ttf-dev \
+    libsdl2-gfx-dev \
+    libdirectfb-dev \
+    libst-dev \
+    mesa-utils \
+    xvfb \
+    x11vnc \
+    wget \
+    bzip2 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -b -p /opt/conda \
+    && rm /tmp/miniconda.sh
+
+# Set up conda environment
+ENV PATH="/opt/conda/bin:$PATH"
+RUN conda create -n emu python=3.8 -y
+
+# Activate the conda environment and install Python packages
+ENV PATH /opt/conda/envs/emu/bin:$PATH
+
+# Install PyTorch and other conda packages
+RUN conda install -n emu pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch -y
+RUN conda install -n emu anaconda::scikit-learn -y
+RUN conda install -n emu anaconda::py-boost -y
+
+# Install pip packages
+RUN pip install --upgrade psutil wheel pytest
+RUN pip install gfootball==2.10.2 gym==0.11
+RUN pip install protobuf==3.19.5 sacred==0.7.5 numpy scipy gym==0.11 matplotlib seaborn \
+    pyyaml==5.3.1 pygame pytest probscale imageio snakeviz tensorboard-logger
+
+# Set the working directory
+WORKDIR /workspace
+RUN git clone https://github.com/diegorandolp/EMU.git /workspace/EMU/ 
+
+# Install EMU_smac_env
+RUN cd /workspace/EMU && pip install -e EMU_smac_env
+
+# Make the install_sc2.sh script executable and run it
+RUN chmod +x /workspace/EMU/EMU_release_pymarl/install_sc2.sh && \
+    cd /workspace/EMU/EMU_release_pymarl && \
+    ./install_sc2.sh
+
+# Command to run when the container starts
+CMD ["/bin/bash"]
