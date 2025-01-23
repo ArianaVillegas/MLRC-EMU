@@ -41,6 +41,7 @@ conda activate emu
 
 
 ```shell
+cd /workspace/EMU
 git pull origin main
 bash /workspace/EMU/docker/setup.sh
 ```
