@@ -23,6 +23,17 @@ RUN apt-get update && apt-get install -y \
     bzip2 \
     && rm -rf /var/lib/apt/lists/*
 
+# Update package lists and install necessary packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    zip unzip \
+    cmake \
+    build-essential \
+    libstdc++6 \
+    software-properties-common && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
     && bash /tmp/miniconda.sh -b -p /opt/conda \
@@ -43,20 +54,44 @@ RUN conda install -n emu anaconda::py-boost -y
 # Install pip packages
 RUN pip install --upgrade psutil wheel pytest
 RUN pip install gfootball==2.10.2 gym==0.11
-RUN pip install protobuf==3.19.5 sacred==0.7.5 numpy scipy gym==0.11 matplotlib seaborn \
+RUN pip install scipy matplotlib seaborn \
     pyyaml==5.3.1 pygame pytest probscale imageio snakeviz tensorboard-logger
+    
+# Install Python dependencies
+RUN pip install protobuf==3.19.6 && \
+    conda install -y -c conda-forge sacred && \
+    conda install -y -c anaconda pymongo && \
+    pip3 install numpy==1.23.1
 
 # Set the working directory
 WORKDIR /workspace
-RUN git clone https://github.com/diegorandolp/EMU.git /workspace/EMU/ 
+RUN git clone https://github.com/ArianaVillegas/MLRC-EMU.git /workspace/EMU/ 
 
-# Install EMU_smac_env
-RUN cd /workspace/EMU && pip install -e EMU_smac_env
+# Install EMU_smac_env (maps)
+RUN cd /workspace/EMU/src && pip install -e EMU_smac_env
 
-# Make the install_sc2.sh script executable and run it
-RUN chmod +x /workspace/EMU/EMU_release_pymarl/install_sc2.sh && \
-    cd /workspace/EMU/EMU_release_pymarl && \
-    ./install_sc2.sh
+# Add repository and update libstdc++6
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get update && \
+    apt-get install -y --only-upgrade libstdc++6
 
-# Command to run when the container starts
-CMD ["/bin/bash"]
+# Copy the updated libstdc++ to the conda environment
+RUN cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /opt/conda/lib/
+
+# Copy the SC2 installation script and run it
+RUN bash /workspace/EMU/src/EMU_release_pymarl/install_sc2.sh
+
+# Build and link gfootball_engine
+RUN cd /opt/conda/lib/python3.8/site-packages/gfootball_engine && \
+    cmake . && \
+    make -j $(nproc) && \
+    ln -sf libgame.so _gameplayfootball.so
+
+# Set environment variables
+ENV SC2PATH=/workspace/EMU/EMU_release_pymarl/3rdparty/StarCraftII
+
+# Clean up Conda cache
+RUN conda clean -a -y
+
+# Default command (if any)
+CMD ["bash"]
