@@ -81,12 +81,6 @@ RUN cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /opt/conda/lib/
 # Copy the SC2 installation script and run it
 RUN bash /workspace/EMU/src/EMU_release_pymarl/install_sc2.sh
 
-# Build and link gfootball_engine
-RUN cd /opt/conda/lib/python3.8/site-packages/gfootball_engine && \
-    cmake . && \
-    make -j $(nproc) && \
-    ln -sf libgame.so _gameplayfootball.so
-
 # Set environment variables
 ENV SC2PATH=/workspace/EMU/EMU_release_pymarl/3rdparty/StarCraftII
 
