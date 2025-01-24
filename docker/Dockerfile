@@ -1,5 +1,5 @@
 # Use an official Ubuntu as a base image
-FROM nvidia/cuda:12.6.3-base-ubuntu24.04
+FROM nvidia/cuda:12.6.3-base-ubuntu22.04
 
 # Set environment variables to avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -58,10 +58,15 @@ RUN pip install scipy matplotlib seaborn \
     pyyaml==5.3.1 pygame pytest probscale imageio snakeviz tensorboard-logger
     
 # Install Python dependencies
-RUN pip install protobuf==3.19.6 && \
+RUN pip install protobuf==3.20.3 && \
     conda install -y -c conda-forge sacred && \
     conda install -y -c anaconda pymongo && \
     pip3 install numpy==1.23.1
+#renzo
+# Install sacred manually
+RUN git clone https://github.com/oxwhirl/sacred.git /install/sacred && \
+    cd /install/sacred && \
+    python3 setup.py install
 
 # Set the working directory
 WORKDIR /workspace

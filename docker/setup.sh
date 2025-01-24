@@ -9,9 +9,6 @@ export SC2PATH='/workspace/EMU/src/EMU_release_pymarl/3rdparty/StarCraftII'
 # Install sacred using conda
 conda install -y -c conda-forge sacred
 
-# Install specific version of protobuf using pip
-pip install protobuf==3.19.6
-
 # Build gfootball_engine
 pushd /opt/conda/envs/emu/lib/python3.8/site-packages/gfootball_engine && cmake . && make -j `nproc` && popd
 
