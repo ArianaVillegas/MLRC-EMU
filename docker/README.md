@@ -13,11 +13,11 @@ docker pull diegoran/emu:v2
 * With GPU Support (if available):
 
 ```shell
-docker run --gpus all diegoran/emu:v2
+docker run -it --gpus all diegoran/emu:v2
 ```
 * Without GPU Support:
 ```shell
-docker run diegoran/emu:v2
+docker run -it diegoran/emu:v2
 ```
 
 3. Start the Container and Access the Terminal
