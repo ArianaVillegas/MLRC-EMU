@@ -46,6 +46,9 @@ git pull origin main
 bash /workspace/EMU/docker/setup.sh
 ```
 
+```shell
+export SC2PATH='/workspace/EMU/src/EMU_release_pymarl/3rdparty/StarCraftII'
+```
 6. Run an experiment
 ```shell
 cd /workspace/EMU/src/EMU_release_pymarl/
