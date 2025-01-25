@@ -44,7 +44,7 @@ Experiments are organized in the `experiments/` folder. To run a specific experi
 
 This repository includes:
 
-- 
+- The integration of Deep Q-Networks (DQN) to address more complex discrete scenarios. Using the iTHOR library, evaluate the performance of DQN in these scenarios by comparing the effectiveness of different episodic memory representation techniques: Autoencoder, Random Projection, and Embeddings. This comparison will highlight how memory representation impacts learning efficiency, policy performance, and overall task success.
 - 
 - 
 
