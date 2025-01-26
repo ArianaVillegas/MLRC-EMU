@@ -168,3 +168,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+#carpertas x
+src/EMU_release_pymarl/3rdparty/
+src/EMU_release_pymarl/__MACOSX/
+src/ejecutar_pymarl.slurm
+src/mi_trabajo.err
+src/mi_trabajo.out
+src/results/
