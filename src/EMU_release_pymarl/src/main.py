@@ -88,13 +88,12 @@ def _get_config_alg(params, arg_name, subfolder, map_name):
         else:
             config_name="EMU_sc2_hard_MMM2"    
     else:
-        
-        if "academy" in map_name:
-            if 'cds' in config_name_default: 
-                config_name="EMU_grf_cds"
-            else:
-                config_name="EMU_grf"
-        else:
+        # if "academy" in map_name:
+        #     if 'cds' in config_name_default: 
+        #         config_name="EMU_grf_cds"
+        #     else:
+        #         config_name="EMU_grf"
+
             if 'cds' in config_name_default: 
                 config_name="EMU_sc2_cds"
             else:
@@ -143,10 +142,10 @@ if __name__ == '__main__':
     env_config= _get_config_env(params, "--env-config", "envs")
     config_dict = recursive_dict_update(config_dict, env_config)
     
-    if "academy" in env_config['env']:
-        map_name=env_config['env']
-    else:
-        map_name=env_config['env_args']['map_name']
+    # if "academy" in env_config['env']:
+    #     map_name=env_config['env']
+    # else:
+    map_name=env_config['env_args']['map_name']
     
     for _i, _v in enumerate(params):
         if _v.split("=")[0] == "env_args.map_name":

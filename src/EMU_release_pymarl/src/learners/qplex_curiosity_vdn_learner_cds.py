@@ -234,11 +234,11 @@ class QPLEX_curiosity_vdn_Learner_cds:
                 intrinsic_input_2[index], next_obs_intrinsic[index], add_id[index], mask_clone[index])
 		#------------------------------------------------------------
 		
-        # Mix
-        if 'academy' in self.args.env:
-            additional_input = obs=batch["obs"][:, :-1]  # for cds_gfootball
-        else:
-            additional_input = None
+        # # Mix
+        # if 'academy' in self.args.env:
+        #     additional_input = obs=batch["obs"][:, :-1]  # for cds_gfootball
+        # else:
+        additional_input = None
 
         if mixer is not None:
             if self.args.mixer == "dmaq_qatten":
