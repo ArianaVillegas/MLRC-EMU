@@ -9,6 +9,7 @@ from controllers import REGISTRY as mac_REGISTRY
 
 class Episodic_memory_buffer():
     def __init__(self, args, scheme ):
+        self.state_visits = {}  #  📌
 
         self.rng = np.random.RandomState(123456)  # deterministic, erase 123456 for stochastic
         self.use_AEM = args.use_AEM
@@ -102,6 +103,8 @@ class Episodic_memory_buffer():
         ep_reward = episode_batch['reward'][0, :] # [time, 1]
         ep_winflag  = episode_batch['flag_win'][0, :] # [time, 1] 
 
+        refuerzo_por_exploracion= 0.
+
         Rtd = 0.
         xi_tau  = 0
         flag_start = False
@@ -110,13 +113,15 @@ class Episodic_memory_buffer():
         for t in range(episode_batch.max_seq_length - 1, -1, -1):
             s = ep_state[t]
             a = ep_action[t]
-            r = ep_reward[t]            
+            r = ep_reward[t]      # 📌 Recompensa en el instante t    
+
+
 
             if xi_tau == 0:
                 xi_tau= ep_winflag[t] # check current time and once it becomes 1 then xi always 1 for that episode
 
-            Rtd = r + self.args.gamma * Rtd
-
+            # Rtd = r + self.args.gamma * Rtd  # ← 📌 Aquí se actualiza la recompensa futura
+            Rtd = r + self.args.gamma * Rtd +refuerzo_por_exploracion #📌 📌 
             if (sum(s)!=0) and (flag_start==False):                
                 flag_start = True
                 if self.memory_emb_type == 2: # state embedding
@@ -149,8 +154,31 @@ class Episodic_memory_buffer():
                 elif self.memory_emb_type == 3:
                     z    = z_input[t].flatten().detach().cpu().numpy()                    
 
-                qd, xi_t, dummy = self.ec_buffer.peek_modified_EC(z, Rtd, xi_tau, True, s_in, t) # input: z (cpu)
-            
+                qd, xi_t, dummy = self.ec_buffer.peek_modified_EC(z, Rtd, xi_tau, True, s_in, t) # input: z (cpu)  
+                #  busca en la memoria episódica el valor más alto asociado a estados previos similares, lo cual corresponde a la función de memoria  H 
+
+                 # 📌 Actualizamos el conteo de visitas para este estado
+                z_hash = z.tobytes()  # Convertimos z en un hash único
+                if z_hash in self.state_visits:
+                    self.state_visits[z_hash] += 1
+                else:
+                    self.state_visits[z_hash] = 1
+
+                # 📌 Incentivo de exploración: Mayor recompensa a estados poco visitados
+                exploration_bonus = 1.0 / np.sqrt(self.state_visits[z_hash] + 1)  # Más grande para estados nuevos
+
+                # 📌 Penalización con sigmoide para evitar sobrepenalizar estados visitados
+                penalty = 1 - 1 / (1 + np.exp(-0.1 * (self.state_visits[z_hash] - 5)))  # Ajustar factor según pruebas
+
+                # 📌 Aplicamos el refuerzo combinado
+                Rtd += self.args.exploration_factor * exploration_bonus  # Incentivo a la exploración
+                Rtd -= self.args.penalization_factor * penalty  # Penalización por visitas repetidas
+
+                # 📌 Guardamos en la memoria episódica con las nuevas recompensas
+                qd, xi_t, dummy = self.ec_buffer.peek_modified_EC(z, Rtd, xi_tau, True, s_in, t)
+
+
+
                 if xi_t == 1: # optimality propagation
                     xi_tau = 1
             
@@ -280,3 +308,4 @@ class Episodic_memory_buffer():
 
             self.is_update_required = True
         #return (1)
+
