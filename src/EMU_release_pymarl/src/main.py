@@ -1,4 +1,3 @@
-from unittest.util import _count_diff_hashable
 import numpy as np
 import os
 import collections
@@ -153,7 +152,8 @@ if __name__ == '__main__':
         
     print("Map_name    >>>>> ",map_name)
     alg_config, config_name = _get_config_alg(params, "--config", "algs", map_name)
-    
+    config_dict['config_name'] = config_name
+
     print("Config_file >>>>> ",config_name)
     config_dict = recursive_dict_update(config_dict, alg_config)
     
@@ -169,11 +169,11 @@ if __name__ == '__main__':
     else:
         cur_config_name = config_dict['config_name']
     if config_dict['env_args']['map_name'] == '':
+        print("No map_name specified")
         save_folder = cur_config_name 
     else:
         save_folder = cur_config_name + '_' + config_dict['env_args']['map_name']
 
-    save_folder   = cur_config_name
     file_obs_path = os.path.join(file_obs_path, save_folder )
     ex.observers.append(FileStorageObserver.create(file_obs_path))
 
