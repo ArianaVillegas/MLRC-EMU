@@ -168,3 +168,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# -------------------------
+src/EMU_release_pymarl/results/
+src/EMU_release_pymarl/3rdparty/
+src/EMU_release_pymarl/__MACOSX/
