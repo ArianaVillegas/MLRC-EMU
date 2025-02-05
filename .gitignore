@@ -173,3 +173,5 @@ cython_debug/
 src/EMU_release_pymarl/results/
 src/EMU_release_pymarl/3rdparty/
 src/EMU_release_pymarl/__MACOSX/
+scripts/khipu/**
+!scripts/khipu/*.sh

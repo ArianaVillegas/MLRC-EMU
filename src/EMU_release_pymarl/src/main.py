@@ -10,7 +10,7 @@ import sys
 import torch as th
 from utils.logging import get_logger
 import yaml
-
+import datetime
 from run import run
 
 SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
@@ -172,7 +172,7 @@ if __name__ == '__main__':
         print("No map_name specified")
         save_folder = cur_config_name 
     else:
-        save_folder = cur_config_name + '_' + config_dict['env_args']['map_name']
+        save_folder = cur_config_name + '_' + config_dict['env_args']['map_name'] + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     file_obs_path = os.path.join(file_obs_path, save_folder )
     ex.observers.append(FileStorageObserver.create(file_obs_path))
