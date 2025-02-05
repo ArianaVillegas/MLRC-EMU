@@ -68,7 +68,7 @@ for algorithm in "${!experiments[@]}"; do
 #SBATCH --mem=$SBATCH_MEM
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=$SBATCH_MAIL
-#SBATCH --nodelist=n001
+
 
 source ~/.bashrc
 source activate emu

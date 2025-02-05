@@ -153,6 +153,7 @@ if __name__ == '__main__':
     print("Map_name    >>>>> ",map_name)
     alg_config, config_name = _get_config_alg(params, "--config", "algs", map_name)
     config_dict['config_name'] = config_name
+    config_dict['env_args']['map_name'] = map_name
 
     print("Config_file >>>>> ",config_name)
     config_dict = recursive_dict_update(config_dict, alg_config)
