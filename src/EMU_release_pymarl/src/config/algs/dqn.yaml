@@ -1,0 +1,13 @@
+name: "dqn"
+agent: "dqn"
+use_cuda: True
+memory_emb_type: 1 # 1=Random, 2=Embeddings, 3=Autoencoder
+use_AEM: True
+emdqn_latent_dim: 512
+lr: 1e-4
+epsilon_start: 1.0
+epsilon_decay: 0.995
+epsilon_min: 0.01
+batch_size: 64
+gamma: 0.99
+target_update_interval: 1000

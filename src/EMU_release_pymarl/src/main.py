@@ -11,6 +11,8 @@ import torch as th
 from utils.logging import get_logger
 import yaml
 import datetime
+from envs.iTHOR.iTHOR_env import iTHOREnvWrapper
+from modules.agents.dqn_agent import DQNAgent
 from run import run
 
 SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
