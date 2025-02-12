@@ -19,11 +19,13 @@ from utils.torch_utils import to_cuda
 from modules.agents.LRN_KNN import LRU_KNN
 from modules.agents.LRN_KNN_STATE import LRU_KNN_STATE
 from components.episodic_memory_buffer import Episodic_memory_buffer
+from components.PenalizationManager import PenalizationManager
 
 import numpy as np
 import copy as cp
 import random
 import time
+
 
 def run(_run, _config, _log):
 

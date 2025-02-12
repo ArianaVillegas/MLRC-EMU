@@ -42,11 +42,12 @@ checkpoint_path: "" # Load a checkpoint from this path
 evaluate: False # Evaluate model for test_nepisode episodes and quit (no training)
 load_step: 0 # Load model trained on this many timesteps (0 if choose max possible)
 save_replay: False # Saving the replay of the model loaded from checkpoint_path
-local_results_path: "results" # Path for local results
+local_results_path: "results" # Path for local results  /////////////////
 config_name: ""
 
 # --- RL hyperparameters ---
-gamma: 0.99
+gamma: 0.99 #No hay justificacion cohernete para etso en el paper 1111111111111111111111111111111111111111111111111111111111
+
 batch_size: 32  # Number of episodes to train on
 buffer_size: 32 # Size of the replay buffer
 lr: 0.0005 # Learning rate for agents

@@ -6,9 +6,21 @@ from modules.agents.LRN_KNN import LRU_KNN
 from modules.agents.LRN_KNN_STATE import LRU_KNN_STATE
 #from modules.agents.state_embedder import StateEmbedder
 from controllers import REGISTRY as mac_REGISTRY
+import time
+
 
 class Episodic_memory_buffer():
+
+    
     def __init__(self, args, scheme ):
+        
+        ##
+        self.agent_id = f"AG-{int(time.time() * 1000)}-{np.random.randint(1000)}"
+        self.access_logs = {}  # Diccionario para almacenar el número de accesos por agente
+        
+        print(f"Memoria episódica inicializada para {self.agent_id}")  # Para depuración
+        
+        ####
 
         self.rng = np.random.RandomState(123456)  # deterministic, erase 123456 for stochastic
         self.use_AEM = args.use_AEM
@@ -30,6 +42,7 @@ class Episodic_memory_buffer():
                 self.predict_optimiser = Adam(params=self.predict_params, lr=args.lr)
 
                 self.ec_buffer = LRU_KNN_STATE(args.emdqn_buffer_size, self.state_dim, args, 'game', self.random_projection, self.state_embed_net)
+                self.ec_buffer.iniciarId(self.agent_id,self.access_logs)
 
             elif self.memory_emb_type == 3: # use embedding function with reconstruction loss
                 self.VAE             = mac_REGISTRY["VAE"](args, self.state_dim)
@@ -43,11 +56,13 @@ class Episodic_memory_buffer():
                 self.predict_optimiser = Adam(params=self.predict_params, lr=args.lr)
 
                 self.ec_buffer = LRU_KNN_STATE(args.emdqn_buffer_size, self.state_dim, args, 'game', self.random_projection, self.state_embed_net)
-
+                self.ec_buffer.iniciarId(self.agent_id,self.access_logs)
             else: # use random projection
                 self.ec_buffer = LRU_KNN_STATE(args.emdqn_buffer_size, self.state_dim, args, 'game', self.random_projection )
+                self.ec_buffer.iniciarId(self.agent_id,self.access_logs)
         else:
             self.ec_buffer = LRU_KNN(args.emdqn_buffer_size, args.emdqn_latent_dim, 'game')
+            self.ec_buffer.iniciarId(self.agent_id,self.access_logs)
 
         self.ec_buffer.strategy = np.zeros([args.emdqn_buffer_size, args.n_agents])
         
@@ -97,33 +112,41 @@ class Episodic_memory_buffer():
       
     #---------------------------------------------------------------------------------------------------------------------------------------    
     def update_ec_modified(self, episode_batch): 
-        ep_state = episode_batch['state'][0, :] # [time, states=140]
-        ep_action = episode_batch['actions'][0, :] # [time, agents, 1]
-        ep_reward = episode_batch['reward'][0, :] # [time, 1]
-        ep_winflag  = episode_batch['flag_win'][0, :] # [time, 1] 
+
+        #→ time: cantidad de pasos en el episodio.
+#→ agents: cantidad de agentes en el entorno.
+# → 1: cada agente toma una única acción por paso.
+        ep_state = episode_batch['state'][0, :] # [time, states=140]  Los estados del entorno en cada paso del tiempo durante el episodio.
+        ep_action = episode_batch['actions'][0, :] # [time, agents, 1] Las acciones tomadas por los agentes en cada paso del episodio.
+        ep_reward = episode_batch['reward'][0, :] # [time, 1]  La recompensa obtenida en cada paso del episodio.
+        ep_winflag  = episode_batch['flag_win'][0, :] # [time, 1]  Un indicador binario que dice si el episodio fue exitoso o no.
 
         Rtd = 0.
-        xi_tau  = 0
+        xi_tau  = 0 #indicadore de exito 
         flag_start = False
-        te = episode_batch.max_seq_length
+        te = episode_batch.max_seq_length #cantidad maxima de pasos
+
+
  
         for t in range(episode_batch.max_seq_length - 1, -1, -1):
-            s = ep_state[t]
-            a = ep_action[t]
-            r = ep_reward[t]            
+            s = ep_state[t] #estado t 
+            a = ep_action[t]# las acciones tomadas en el timpo t  de cada agente 
+            r = ep_reward[t]        #recompenza en el timpo t    
 
             if xi_tau == 0:
                 xi_tau= ep_winflag[t] # check current time and once it becomes 1 then xi always 1 for that episode
 
-            Rtd = r + self.args.gamma * Rtd
+            Rtd = r + self.args.gamma * Rtd  #################################################
 
-            if (sum(s)!=0) and (flag_start==False):                
+
+
+            if (sum(s)!=0) and (flag_start==False):      #si el estdo recion inicia no hay penalñizacion obio           
                 flag_start = True
                 if self.memory_emb_type == 2: # state embedding
                     te = t
                     state_input = (ep_state[0:te+1]) # (time, s_dim)
-                    state_input_exp = state_input.unsqueeze(0) # (bs, time, s_dim)
-                    z_input = (self.state_embed_net(state_input_exp)).squeeze(0) # (time, s_dim)
+                    state_input_exp = state_input.unsqueeze(0) # (bs, time, s_dim) #grega una dimensión en el primer eje (dimensión 0).
+                    z_input = (self.state_embed_net(state_input_exp)).squeeze(0) # (time, s_dim)estado embedio o comprimido 
 
                 elif self.memory_emb_type == 3: # state embedding with cVAE
                     te = t
@@ -147,7 +170,8 @@ class Episodic_memory_buffer():
                 elif self.memory_emb_type == 2:
                     z    = z_input[t].flatten().detach().cpu().numpy()                    
                 elif self.memory_emb_type == 3:
-                    z    = z_input[t].flatten().detach().cpu().numpy()                    
+                    z    = z_input[t].flatten().detach().cpu().numpy()  
+
 
                 qd, xi_t, dummy = self.ec_buffer.peek_modified_EC(z, Rtd, xi_tau, True, s_in, t) # input: z (cpu)
             

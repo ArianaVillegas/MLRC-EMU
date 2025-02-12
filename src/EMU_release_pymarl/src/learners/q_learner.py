@@ -100,7 +100,7 @@ class QLearner:
 
         # Td-error
         td_error = (chosen_action_qvals - targets.detach())
-
+            #-------------------------------------------------------------------------------------------
         mask = mask.expand_as(td_error)
 
         if show_v:
