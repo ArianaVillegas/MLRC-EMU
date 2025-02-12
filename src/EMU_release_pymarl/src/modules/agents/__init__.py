@@ -12,9 +12,10 @@ from .rnn_fast_agent import RNNFastAgent
 from .rnd_history_agent import RNDHistoryAgent
 from .rnn_individualQ_agent import RNN_individualQ_Agent
 from .rnd_fast_history_agent import RND_Fast_historyAgent
+from .dqn_agent import DQNAgent
 
 
-
+REGISTRY["dqn"]=DQNAgent
 REGISTRY["rnn"] = RNNAgent
 REGISTRY["rnn_sd"] = RNN_SD_Agent
 REGISTRY["ff"] = FFAgent

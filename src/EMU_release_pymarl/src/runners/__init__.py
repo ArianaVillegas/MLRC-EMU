@@ -8,3 +8,6 @@ REGISTRY["offpolicy"] = OffPolicyRunner
 
 from .parallel_runner import ParallelRunner
 REGISTRY["parallel"] = ParallelRunner
+
+from .dqn_runner import DQNRunner
+REGISTRY["dqn"] = DQNRunner

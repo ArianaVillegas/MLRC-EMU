@@ -11,15 +11,16 @@ import torch as th
 from utils.logging import get_logger
 import yaml
 import datetime
-from envs.iTHOR.iTHOR_env import iTHOREnvWrapper
-from modules.agents.dqn_agent import DQNAgent
+from modules.agents.dqn_agent import DQNAgent  
+from runners.dqn_runner import DQNRunner     
+
 from run import run
 
-SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
+SETTINGS['CAPTURE_MODE'] = "fd"  # set to "no" if you want to see stdout/stderr in console
 logger = get_logger()
 
-#ex = Experiment("pymarl")
-ex = Experiment("pymarl", save_git_info=False) 
+
+ex = Experiment("pymarl", save_git_info=False)
 
 ex.logger = logger
 ex.captured_out_filter = apply_backspaces_and_linefeeds
@@ -29,14 +30,30 @@ results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
 
 @ex.main
 def my_main(_run, _config, _log):
-    # Setting the random seed throughout the modules
     config = config_copy(_config)
     np.random.seed(config["seed"])
     th.manual_seed(config["seed"])
     config['env_args']['seed'] = config["seed"]
 
-    # run the framework
-    run(_run, config, _log)
+    
+    if config["agent"] == "dqn":
+        # Inicializar entorno SMAC
+        from envs.multiagentenv import MultiAgentEnv
+        env = MultiAgentEnv(**config["env_args"])
+        
+        # Inicializar agente DQN
+        agent = DQNAgent(
+            obs_dim=env.get_obs_size(),
+            action_dim=env.get_total_actions(),
+            config=config["agent_args"]
+        )
+        
+        # Ejecutar runner DQN
+        runner = DQNRunner(config, env, agent, _log)
+        runner.run()
+    else:
+        # Mantener lógica original
+        run(_run, config, _log)
 
 
 def _get_config_env(params, arg_name, subfolder):
@@ -55,6 +72,7 @@ def _get_config_env(params, arg_name, subfolder):
                 assert False, "{}.yaml error: {}".format(config_name, exc)
         return config_dict
 
+
 def _get_config_alg(params, arg_name, subfolder, map_name):
     config_name = None
     
@@ -65,41 +83,40 @@ def _get_config_alg(params, arg_name, subfolder, map_name):
             break
 
     # use task dependent configuration
-    if map_name=="3s5z_vs_3s6z":        
+    if map_name == "3s5z_vs_3s6z":        
         if 'cds' in config_name_default: 
-            config_name="EMU_sc2_hard_cds_3s5z_vs_3s6z"
+            config_name = "EMU_sc2_hard_cds_3s5z_vs_3s6z"
         else:
-            config_name="EMU_sc2_hard_3s5z_vs_3s6z"
+            config_name = "EMU_sc2_hard_3s5z_vs_3s6z"
 
-    elif map_name=="6h_vs_8z":
+    elif map_name == "6h_vs_8z":
         if 'cds' in config_name_default: 
-            config_name="EMU_sc2_hard_cds_6h_vs_8z"
+            config_name = "EMU_sc2_hard_cds_6h_vs_8z"
         else:
-            config_name="EMU_sc2_hard_6h_vs_8z"
+            config_name = "EMU_sc2_hard_6h_vs_8z"
 
-    elif map_name=="corridor":
+    elif map_name == "corridor":
         if 'cds' in config_name_default: 
-            config_name="EMU_sc2_hard_cds_corridor"
+            config_name = "EMU_sc2_hard_cds_corridor"
         else:
-            config_name="EMU_sc2_hard_corridor"
+            config_name = "EMU_sc2_hard_corridor"
 
-    elif map_name=="MMM2":
+    elif map_name == "MMM2":
         if 'cds' in config_name_default: 
-            config_name="EMU_sc2_hard_cds_MMM2"
+            config_name = "EMU_sc2_hard_cds_MMM2"
         else:
-            config_name="EMU_sc2_hard_MMM2"    
+            config_name = "EMU_sc2_hard_MMM2"    
     else:
         # if "academy" in map_name:
         #     if 'cds' in config_name_default: 
         #         config_name="EMU_grf_cds"
         #     else:
         #         config_name="EMU_grf"
-
-            if 'cds' in config_name_default: 
-                config_name="EMU_sc2_cds"
-            else:
-                config_name="EMU_sc2"
-            config_name = config_name_default
+        if 'cds' in config_name_default: 
+            config_name = "EMU_sc2_cds"
+        else:
+            config_name = "EMU_sc2"
+        config_name = config_name_default
                 
     if config_name is not None:
         with open(os.path.join(os.path.dirname(__file__), "config", subfolder, "{}.yaml".format(config_name)), "r") as f:
@@ -107,7 +124,6 @@ def _get_config_alg(params, arg_name, subfolder, map_name):
                 config_dict = yaml.safe_load(f)
             except yaml.YAMLError as exc:
                 assert False, "{}.yaml error: {}".format(config_name, exc)
-        #return config_dict
         return config_dict, config_name
 
 
@@ -135,35 +151,34 @@ if __name__ == '__main__':
     with open(os.path.join(os.path.dirname(__file__), "config", "default.yaml"), "r", encoding="utf8", errors="ignore") as f:
         try:
             config_dict = yaml.safe_load(f)
-            
         except yaml.YAMLError as exc:
             assert False, "default.yaml error: {}".format(exc)
 
     # Load algorithm and env base configs
-    env_config= _get_config_env(params, "--env-config", "envs")
+    env_config = _get_config_env(params, "--env-config", "envs")
     config_dict = recursive_dict_update(config_dict, env_config)
     
     # if "academy" in env_config['env']:
-    #     map_name=env_config['env']
+    #     map_name = env_config['env']
     # else:
-    map_name=env_config['env_args']['map_name']
+    map_name = env_config['env_args']['map_name']
     
     for _i, _v in enumerate(params):
         if _v.split("=")[0] == "env_args.map_name":
             map_name = _v.split("=")[1]
         
-    print("Map_name    >>>>> ",map_name)
+    print("Map_name    >>>>> ", map_name)
     alg_config, config_name = _get_config_alg(params, "--config", "algs", map_name)
     config_dict['config_name'] = config_name
     config_dict['env_args']['map_name'] = map_name
 
-    print("Config_file >>>>> ",config_name)
+    print("Config_file >>>>> ", config_name)
     config_dict = recursive_dict_update(config_dict, alg_config)
     
-    # now add all the config to sacred
+    # Ahora se agrega toda la config a sacred
     ex.add_config(config_dict)
 
-    # Save to disk by default for sacred
+    # Guardar en disco por defecto para sacred
     logger.info("Saving to FileStorageObserver in results/sacred.")
     file_obs_path = os.path.join(results_path, "sacred")
 
@@ -177,7 +192,7 @@ if __name__ == '__main__':
     else:
         save_folder = cur_config_name + '_' + config_dict['env_args']['map_name'] + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    file_obs_path = os.path.join(file_obs_path, save_folder )
+    file_obs_path = os.path.join(file_obs_path, save_folder)
     ex.observers.append(FileStorageObserver.create(file_obs_path))
 
     ex.run_commandline(params)
