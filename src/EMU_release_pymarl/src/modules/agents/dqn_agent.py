@@ -1,42 +1,76 @@
+import random
+import collections
+from copy import deepcopy
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
-from components.episodic_memory_buffer import EpisodicMemoryBuffer
+import torch.optim as optim
+
+class ReplayBuffer:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.buffer = collections.deque(maxlen=capacity)
+    
+    def push(self, state, action, reward, next_state, done):
+        self.buffer.append((state, action, reward, next_state, done))
+    
+    def sample(self, batch_size):
+        batch = random.sample(self.buffer, batch_size)
+        states, actions, rewards, next_states, dones = map(np.array, zip(*batch))
+        return states, actions, rewards, next_states, dones
+    
+    def __len__(self):
+        return len(self.buffer)
 
 class DQNAgent(nn.Module):
-    def __init__(self, args):
-        super().__init__()
-        self.args = args
-        
-        # Red Q
-        self.q_net = nn.Sequential(
-            nn.Conv2d(3, 32, 8, stride=4),
+    def __init__(self, obs_dim, action_dim, config):
+        super(DQNAgent, self).__init__()
+        self.obs_dim = obs_dim
+        self.action_dim = action_dim
+        self.gamma = config.get("gamma", 0.99)
+        self.lr = config.get("lr", 0.001)
+        self.buffer_capacity = config.get("buffer_capacity", 10000)
+        self.batch_size = config.get("batch_size", 32)
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.replay_buffer = ReplayBuffer(self.buffer_capacity)
+        self.q_network = nn.Sequential(
+            nn.Linear(obs_dim, 64),
             nn.ReLU(),
-            nn.Conv2d(32, 64, 4, stride=2),
+            nn.Linear(64, 64),
             nn.ReLU(),
-            nn.Conv2d(64, 64, 3, stride=1),
-            nn.ReLU(),
-            nn.Flatten(),
-            nn.Linear(3136 + args.emdqn_latent_dim, 512),
-            nn.ReLU(),
-            nn.Linear(512, args.n_actions)
-        )
-        
-        # Memoria Episódica
-        self.memory = EpisodicMemoryBuffer(args, scheme={
-            'state': {'vshape': 3136},  
-            'actions': {'vshape': 1},
-            'reward': {'vshape': 1}
-        })
-        
-        self.optimizer = torch.optim.Adam(self.q_net.parameters(), lr=args.lr)
-    
-    def act(self, obs):
-        if np.random.random() < self.args.epsilon:
-            return np.random.randint(len(self.args.actions))
-        
+            nn.Linear(64, action_dim)
+        ).to(self.device)
+        self.target_network = deepcopy(self.q_network)
+        self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.lr)
+
+    def act(self, state, epsilon=0.1):
+        if random.random() < epsilon:
+            return random.randint(0, self.action_dim - 1)
+        else:
+            state_tensor = torch.tensor(state, dtype=torch.float32).to(self.device).unsqueeze(0)
+            with torch.no_grad():
+                q_values = self.q_network(state_tensor)
+            return q_values.argmax().item()
+
+    def update(self):
+        if len(self.replay_buffer) < self.batch_size:
+            return None
+        states, actions, rewards, next_states, dones = self.replay_buffer.sample(self.batch_size)
+        states = torch.tensor(states, dtype=torch.float32).to(self.device)
+        actions = torch.tensor(actions, dtype=torch.int64).unsqueeze(1).to(self.device)
+        rewards = torch.tensor(rewards, dtype=torch.float32).unsqueeze(1).to(self.device)
+        next_states = torch.tensor(next_states, dtype=torch.float32).to(self.device)
+        dones = torch.tensor(dones, dtype=torch.float32).unsqueeze(1).to(self.device)
+
+        q_values = self.q_network(states).gather(1, actions)
         with torch.no_grad():
-            state_tensor = torch.tensor(obs['image']).permute(2,0,1).unsqueeze(0).float()
-            memory_context = self.memory.retrieve(state_tensor)
-            q_values = self.q_net(torch.cat([state_tensor, memory_context], dim=1))
-            return torch.argmax(q_values).item()
+            max_next_q_values = self.target_network(next_states).max(1)[0].unsqueeze(1)
+            target = rewards + self.gamma * max_next_q_values * (1 - dones)
+        loss = nn.MSELoss()(q_values, target)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+        return loss.item()
+
+    def update_target(self):
+        self.target_network.load_state_dict(self.q_network.state_dict())

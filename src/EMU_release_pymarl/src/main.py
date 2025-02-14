@@ -40,21 +40,31 @@ def my_main(_run, _config, _log):
         # Inicializar entorno SMAC
         from envs.multiagentenv import MultiAgentEnv
         env = MultiAgentEnv(**config["env_args"])
-        
-        # Inicializar agente DQN
+        # Inicializar wrapper para DQN
+        from sc2_wrapper import SC2Wrapper
+        env = SC2Wrapper(env)
+        # Obtener la dimensión de la observación a partir del estado procesado
+        initial_state = env.reset()
+        obs_dim = initial_state.shape[0]
+        # Obtener la cantidad total de acciones directamente desde el entorno original
+        action_dim = env.env.get_total_actions()
+
+        # Inicializar el agente DQN
+        from modules.agents.dqn_agent import DQNAgent
         agent = DQNAgent(
-            obs_dim=env.get_obs_size(),
-            action_dim=env.get_total_actions(),
+            obs_dim=obs_dim,
+            action_dim=action_dim,
             config=config["agent_args"]
         )
-        
-        # Ejecutar runner DQN
+
+        # Ejecutar el runner DQN
+        from runners.dqn_runner import DQNRunner
         runner = DQNRunner(config, env, agent, _log)
         runner.run()
     else:
-        # Mantener lógica original
+        # Lógica original para otros agentes
+        from run import run
         run(_run, config, _log)
-
 
 def _get_config_env(params, arg_name, subfolder):
     config_name = None
