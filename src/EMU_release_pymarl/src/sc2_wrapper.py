@@ -13,6 +13,4 @@ class SC2Wrapper:
         return self.preprocess(next_state), reward, done, info
 
     def preprocess(self, state):
-        # Aquí se puede aplicar el preprocesamiento que necesites:
-        # Ejemplo: convertir imágenes a un vector plano
         return np.array(state).flatten()

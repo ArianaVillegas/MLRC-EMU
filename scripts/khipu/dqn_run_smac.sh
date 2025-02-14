@@ -4,14 +4,7 @@
 declare -A experiments
 
 experiments=(
-    [EMU_sc2]="1c3s5z 3s_vs_5z 5m_vs_6m"
-    [EMU_sc2_cds]="1c3s5z 3s_vs_5z 5m_vs_6m"
-    [EMU_sc2_hard_3s5z_vs_3s6z]="3s5z_vs_3s6z"
-    [EMU_sc2_hard_cds_3s5z_vs_3s6z]="3s5z_vs_3s6z"
-    [EMU_sc2_hard_6h_vs_8z]="6h_vs_8z"
-    [EMU_sc2_hard_cds_6h_vs_8z]="6h_vs_8z"
-    [EMU_sc2_hard_cds_MMM2]="MM2"
-    [EMU_sc2_hard_MMM2]="MM2"
+    [dqn_smac]="1c3s5z 3s_vs_5z 5m_vs_6m"
 )
 
 # Define maps with indexes
