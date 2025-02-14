@@ -73,7 +73,7 @@ for algorithm in "${!experiments[@]}"; do
 source ~/.bashrc
 source activate emu
 
-export SC2PATH='$PATH_PYMARL/3rdparty/StarCraftII'
+export SC2PATH='$HOME/MLRC-EMU/src/EMU_release_pymarl/3rdparty/StarCraftII'
 
 
 python3 $PATH_PYMARL/src/main.py --config=$algorithm --env-config=sc2 with env_args.map_name=$map save_model=True
