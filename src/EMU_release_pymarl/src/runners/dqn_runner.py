@@ -8,7 +8,7 @@ class DQNRunner:
 
        
         from envs.multiagentenv import MultiAgentEnv
-        self.env = MultiAgentEnv(**args.env_args)
+        self.env = MultiAgentEnv()
         
       
         obs_dim = self.env.get_obs_size()
