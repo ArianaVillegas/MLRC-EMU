@@ -1,8 +1,8 @@
-from smac.env import StarCraft2Env
-
 class MultiAgentEnv(object):
     def __init__(self, **kwargs):
-        
+       
+        from smac.env import StarCraft2Env  
+       
         self.env = StarCraft2Env(**kwargs)
         self.env_info = self.env.get_env_info()
         self.n_agents = self.env_info.get("n_agents", None)
@@ -24,13 +24,13 @@ class MultiAgentEnv(object):
 
     def get_obs_agent(self, agent_id):
         """
-        Returns the observation for the agent with the specified ID.
+        Returns the observation for the specified agent.
         """
         return self.env.get_obs_agent(agent_id)
 
     def get_obs_size(self):
         """
-        Returns the size of the observation (obs_shape) as defined in SMAC.
+        Returns the observation size as defined in SMAC.
         """
         return self.env_info["obs_shape"]
 
@@ -42,7 +42,7 @@ class MultiAgentEnv(object):
 
     def get_state_size(self):
         """
-        Returns the size of the global state (state_shape).
+        Returns the global state size as defined in SMAC.
         """
         return self.env_info["state_shape"]
 
@@ -54,13 +54,13 @@ class MultiAgentEnv(object):
 
     def get_avail_agent_actions(self, agent_id):
         """
-        Returns the available actions for the agent with the specified ID.
+        Returns the available actions for the specified agent.
         """
         return self.env.get_avail_agent_actions(agent_id)
 
     def get_total_actions(self):
         """
-        Returns the total number of actions that an agent can take.
+        Returns the total number of actions an agent can take.
         """
         return self.env_info["n_actions"]
 
@@ -72,7 +72,7 @@ class MultiAgentEnv(object):
 
     def render(self):
         """
-        Renders the visual representation of the environment.
+        Renders the environment.
         """
         self.env.render()
 
@@ -84,7 +84,7 @@ class MultiAgentEnv(object):
 
     def seed(self, seed):
         """
-        Sets the random seed for the environment.
+        Sets the environment seed.
         """
         self.env.seed(seed)
 
