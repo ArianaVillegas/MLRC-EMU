@@ -1,10 +1,39 @@
+from smac.env import StarCraft2Env
+
 class MultiAgentEnv(object):
     def __init__(self, **kwargs):
-       
-        from smac.env import StarCraft2Env  
-       
+    
         self.env = StarCraft2Env(**kwargs)
-        self.env_info = self.env.get_env_info()
+        try:
+            self.env_info = self.env.get_env_info()
+        except AttributeError:
+        
+            try:
+                obs_size = self.env.get_obs_size()
+            except AttributeError:
+                obs_size = None
+            try:
+                state_size = self.env.get_state_size()
+            except AttributeError:
+                state_size = None
+            try:
+                n_actions = self.env.get_total_actions()
+            except AttributeError:
+                n_actions = None
+
+            n_agents = getattr(self.env, "n_agents", None)
+            episode_limit = getattr(self.env, "episode_limit", None)
+            unit_dim = getattr(self.env, "unit_dim", None)
+
+            self.env_info = {
+                "obs_shape": obs_size,
+                "state_shape": state_size,
+                "n_actions": n_actions,
+                "n_agents": n_agents,
+                "episode_limit": episode_limit,
+                "unit_dim": unit_dim
+            }
+
         self.n_agents = self.env_info.get("n_agents", None)
         self.episode_limit = self.env_info.get("episode_limit", None)
         self.unit_dim = self.env_info.get("unit_dim", None)
@@ -84,7 +113,7 @@ class MultiAgentEnv(object):
 
     def seed(self, seed):
         """
-        Sets the environment seed.
+        Sets the random seed for the environment.
         """
         self.env.seed(seed)
 
