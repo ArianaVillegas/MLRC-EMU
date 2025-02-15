@@ -175,3 +175,5 @@ src/EMU_release_pymarl/3rdparty/
 src/EMU_release_pymarl/__MACOSX/
 scripts/khipu/**
 !scripts/khipu/*.sh
+
+src/EMU_release_pymarl/src/config/algs/experiment
