@@ -1,9 +1,10 @@
-from smac.env import StarCraft2Env
+##from smac.env import StarCraft2Env
+import smac.env.starcraft2.starcraft2_EMU as starcraft
 
 class MultiAgentEnv(object):
     def __init__(self, **kwargs):
     
-        self.env = StarCraft2Env(**kwargs)
+        self.env = starcraft.StarCraft2Env(**kwargs)
         try:
             self.env_info = self.env.get_env_info()
         except AttributeError:
