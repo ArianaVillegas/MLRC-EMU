@@ -1,17 +1,29 @@
-import torch
 import random
+import torch
 
 class DQNRunner:
-    def __init__(self, config, env, agent, logger):
-        self.config = config
-        self.env = env
-        self.agent = agent
+    def __init__(self, args, logger):
+        self.args = args
         self.logger = logger
-        self.max_episodes = config.get("max_episodes", 500)
-        self.epsilon = config.get("epsilon_start", 1.0)
-        self.epsilon_decay = config.get("epsilon_decay", 0.995)
-        self.epsilon_min = config.get("epsilon_min", 0.1)
-        self.target_update_freq = config.get("target_update_freq", 1000)
+
+       
+        from envs.multiagentenv import MultiAgentEnv
+        self.env = MultiAgentEnv()
+        
+      
+        obs_dim = self.env.get_obs_size()
+        action_dim = self.env.get_total_actions()
+        
+      
+        from modules.agents.dqn_agent import DQNAgent
+        self.agent = DQNAgent(obs_dim, action_dim, args.agent_args)
+        
+     
+        self.max_episodes = args.get("max_episodes", 500)
+        self.epsilon = args.get("epsilon_start", 1.0)
+        self.epsilon_decay = args.get("epsilon_decay", 0.995)
+        self.epsilon_min = args.get("epsilon_min", 0.1)
+        self.target_update_freq = args.get("target_update_freq", 1000)
         self.total_steps = 0
 
     def run(self):
