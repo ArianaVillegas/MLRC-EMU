@@ -16,6 +16,7 @@ from .dqn_agent import DQNAgent
 
 
 REGISTRY["dqn"]=DQNAgent
+#REGISTRY["dqn_agent"]=DQNAgent
 REGISTRY["rnn"] = RNNAgent
 REGISTRY["rnn_sd"] = RNN_SD_Agent
 REGISTRY["ff"] = FFAgent

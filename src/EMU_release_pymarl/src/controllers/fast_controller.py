@@ -1,7 +1,7 @@
 from modules.agents import REGISTRY as agent_REGISTRY
 from components.action_selectors import REGISTRY as action_REGISTRY
 import torch as th
-
+#nano MLRC-EMU/src/EMU_release_pymarl/src/controllers/fast_controller.py
 
 # This multi-agent controller shares parameters between agents
 class FastMAC:
@@ -88,7 +88,10 @@ class FastMAC:
         self.agent.load_state_dict(th.load("{}/agent.th".format(path), map_location=lambda storage, loc: storage))
 
     def _build_agents(self, input_shape):
-        self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
+        agent_name = "dqn" if self.args.agent == "dqn_agent" else self.args.agent
+        config = getattr(self.args, "config", {})  
+        self.agent = agent_REGISTRY[agent_name](input_shape, 0, self.args)
+
 
     def _build_inputs(self, batch, t, batch_inf):
         # Assumes homogenous agents with flat observations.

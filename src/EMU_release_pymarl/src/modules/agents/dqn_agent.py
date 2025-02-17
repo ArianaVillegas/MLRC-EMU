@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+#nano MLRC-EMU/src/EMU_release_pymarl/src/modules/agents/dqn_agent.py
 
 class ReplayBuffer:
     def __init__(self, capacity):
@@ -27,6 +28,7 @@ class DQNAgent(nn.Module):
         super(DQNAgent, self).__init__()
         self.obs_dim = obs_dim
         self.action_dim = action_dim
+        print(f"obs_dim: {obs_dim}, action_dim: {action_dim}") 
         self.gamma = config.get("gamma", 0.99)
         self.lr = config.get("lr", 0.001)
         self.buffer_capacity = config.get("buffer_capacity", 10000)

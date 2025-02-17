@@ -1,3 +1,5 @@
+##
+nano MLRC-EMU/src/EMU_release_pymarl/src/config/algs/dqn_smac.yaml
 # --- Qatten specific parameters ---
 
 # use epsilon greedy action selector
@@ -98,3 +100,8 @@ predict_vdn_target: True
 predict2_vdn_target: True
 use_qtotal_td: False
 name: "dqn_smac"
+
+
+agent_args:
+  learning_rate: 0.001
+  epsilon: 0.1
