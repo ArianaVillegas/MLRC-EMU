@@ -19,23 +19,19 @@ class DQNRunner:
         from modules.agents.dqn_agent import DQNAgent
         self.agent = DQNAgent(obs_dim, action_dim, args.agent_args)
         
-    
+        # self.max_episodes = args.get("max_episodes", 500)
+        # self.epsilon = args.get("epsilon_start", 1.0)
+        # self.epsilon_decay = args.get("epsilon_decay", 0.995)
+        # self.epsilon_min = args.get("epsilon_min", 0.1)
+        # self.target_update_freq = args.get("target_update_freq", 1000)
+        # self.total_steps = 0
 
-        '''     
-        self.max_episodes = args.get("max_episodes", 500)
-        self.epsilon = args.get("epsilon_start", 1.0)
-        self.epsilon_decay = args.get("epsilon_decay", 0.995)
-        self.epsilon_min = args.get("epsilon_min", 0.1)
-        self.target_update_freq = args.get("target_update_freq", 1000)
-        self.total_steps = 0
-        '''
-    	self.max_episodes = getattr(args, "max_episodes", 500)
+        self.max_episodes = getattr(args, "max_episodes", 500)
         self.epsilon = getattr(args, "epsilon_start", 1.0)
         self.epsilon_decay = getattr(args, "epsilon_decay", 0.995)
         self.epsilon_min = getattr(args, "epsilon_min", 0.1)
         self.target_update_freq = getattr(args, "target_update_freq", 1000)
         self.total_steps = 0
-
 
         print("self.max_episodes", self.max_episodes)
         print("self.epsilon", self.epsilon)
