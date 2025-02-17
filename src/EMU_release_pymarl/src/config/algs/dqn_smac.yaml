@@ -1,5 +1,4 @@
-##
-nano MLRC-EMU/src/EMU_release_pymarl/src/config/algs/dqn_smac.yaml
+##nano MLRC-EMU/src/EMU_release_pymarl/src/config/algs/dqn_smac.yaml
 # --- Qatten specific parameters ---
 
 # use epsilon greedy action selector
