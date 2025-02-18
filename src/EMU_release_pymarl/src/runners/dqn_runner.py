@@ -4,6 +4,7 @@ import torch
 from runners.episode_runner import EpisodeRunner
 from utils.logging import get_logger
 
+# Aca hice herencia porque se invocan metodos que no estan en el runner original (EpisodeRunner es de los que tiene)
 class DQNRunner(EpisodeRunner):
     def __init__(self, args, logger):
         super().__init__(args, logger) 

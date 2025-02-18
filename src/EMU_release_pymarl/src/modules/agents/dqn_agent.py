@@ -56,6 +56,7 @@ class DQNAgent(nn.Module):
     def init_hidden(self):
         return torch.zeros(1, self.action_dim)
 
+    # 5 por los estados que estan en startcraft2_EMU
     def act(self, state, epsilon=0.1):
         if random.random() < epsilon:
             #return random.randint(0, self.action_dim - 1)
@@ -66,7 +67,6 @@ class DQNAgent(nn.Module):
                 q_values = self.q_network(state_tensor)
             n = q_values.argmax().item()
             return (n % 5) + 1
-            ##if n != 0 else 5
             #return n
 
     def update(self):

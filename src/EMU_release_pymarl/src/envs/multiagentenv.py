@@ -45,6 +45,7 @@ class MultiAgentEnv(object):
         Takes a list of actions (one per agent) and returns (reward, terminated, info).
         """
         print("actions", actions)
+        ## transforma a array porque arroja solo 1
         if isinstance(actions, int):
             actions = [actions]
         reward, terminated, info = self.env.step(actions)
