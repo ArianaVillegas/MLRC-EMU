@@ -89,7 +89,7 @@ class FastMAC:
 
     def _build_agents(self, input_shape):
         if self.args.agent == "dqn_agent":
-            self.agent = agent_REGISTRY["dqn"](input_shape, 14, self.args)
+            self.agent = agent_REGISTRY["dqn"](input_shape, 5, self.args)
         else:
             self.agent = agent_REGISTRY[self.args.agent](input_shape, self.args)
 

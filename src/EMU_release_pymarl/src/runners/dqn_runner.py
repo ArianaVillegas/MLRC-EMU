@@ -2,12 +2,12 @@ import random
 import torch
 ##nano MLRC-EMU/src/EMU_release_pymarl/src/runners/dqn_runner.py
 from runners.episode_runner import EpisodeRunner
-
+from utils.logging import get_logger
 
 class DQNRunner(EpisodeRunner):
     def __init__(self, args, logger):
         super().__init__(args, logger) 
-
+        self.logger = get_logger()
         ##print("args", self.args)
        
         from envs.multiagentenv import MultiAgentEnv
@@ -49,7 +49,8 @@ class DQNRunner(EpisodeRunner):
             episode_reward = 0
             while not done:
                 action = self.agent.act(state, self.epsilon)
-                next_state, reward, done, info = self.env.step(action)
+                #next_state, reward, done, info = self.env.step(action)
+                next_state, reward, done = self.env.step(action)
                 self.agent.replay_buffer.push(state, action, reward, next_state, done)
                 state = next_state
                 episode_reward += reward
