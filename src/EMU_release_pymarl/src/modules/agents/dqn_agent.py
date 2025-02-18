@@ -58,15 +58,14 @@ class DQNAgent(nn.Module):
 
     def act(self, state, epsilon=0.1):
         if random.random() < epsilon:
-            return random.randint(0, self.action_dim - 1)
+            #return random.randint(0, self.action_dim - 1)
+            return random.randint(1, 5 - 1)
         else:
             state_tensor = torch.tensor(state, dtype=torch.float32).to(self.device).unsqueeze(0)
             with torch.no_grad():
                 q_values = self.q_network(state_tensor)
             n = q_values.argmax().item()
-            print("n act", n)
-            print("n act", (n - self.action_dim) % self.action_dim + 1)
-            return (n - self.action_dim) % self.action_dim + 1
+            return (n % 5) + 1
             ##if n != 0 else 5
             #return n
 

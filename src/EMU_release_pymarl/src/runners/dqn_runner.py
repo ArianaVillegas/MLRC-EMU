@@ -48,6 +48,7 @@ class DQNRunner(EpisodeRunner):
             done = False
             episode_reward = 0
             while not done:
+                print("state", state)
                 action = self.agent.act(state, self.epsilon)
                 print("action run", action)
                 #next_state, reward, done, info = self.env.step(action)
