@@ -1,10 +1,12 @@
 import random
 import torch
 ##nano MLRC-EMU/src/EMU_release_pymarl/src/runners/dqn_runner.py
-class DQNRunner:
+from runners.episode_runner import EpisodeRunner
+
+
+class DQNRunner(EpisodeRunner):
     def __init__(self, args, logger):
-        self.args = args
-        self.logger = logger
+        super().__init__(args, logger) 
 
         ##print("args", self.args)
        
@@ -40,7 +42,7 @@ class DQNRunner:
         print("self.target_update_freq", self.target_update_freq)
         print("self.total_steps", self.total_steps)
 
-    def run(self):
+    def run(self, test_mode=False):
         for episode in range(self.max_episodes):
             state = self.env.reset()
             done = False

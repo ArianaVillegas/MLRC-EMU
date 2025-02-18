@@ -1,5 +1,6 @@
 ##from smac.env import StarCraft2Env
 import smac.env.starcraft2.starcraft2_EMU as starcraft
+#nano MLRC-EMU/src/EMU_release_pymarl/src/envs/multiagentenv.py
 
 class MultiAgentEnv(object):
     def __init__(self, **kwargs):
@@ -43,6 +44,9 @@ class MultiAgentEnv(object):
         """
         Takes a list of actions (one per agent) and returns (reward, terminated, info).
         """
+        print("actions", actions)
+        if isinstance(actions, int):
+            actions = [actions]
         reward, terminated, info = self.env.step(actions)
         return reward, terminated, info
 
