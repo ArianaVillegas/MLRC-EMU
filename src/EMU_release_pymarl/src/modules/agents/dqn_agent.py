@@ -63,7 +63,12 @@ class DQNAgent(nn.Module):
             state_tensor = torch.tensor(state, dtype=torch.float32).to(self.device).unsqueeze(0)
             with torch.no_grad():
                 q_values = self.q_network(state_tensor)
-            return q_values.argmax().item()
+            n = q_values.argmax().item()
+            print("n act", n)
+            print("n act", (n - self.action_dim) % self.action_dim + 1)
+            return (n - self.action_dim) % self.action_dim + 1
+            ##if n != 0 else 5
+            #return n
 
     def update(self):
         if len(self.replay_buffer) < self.batch_size:
