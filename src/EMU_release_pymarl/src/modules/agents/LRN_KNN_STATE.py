@@ -32,7 +32,7 @@ atol_memory = config.get("atol_memory")
 
 memory_emb_type = config.get("memory_emb_type")
 with open(json_file_path, "r") as file:
-    config2 = json.safe_load(file)
+    config2 = json.load(file)
 nombre_experiemnto = config2.get("experiment_name")
 # Determinar la letra correspondiente a atol_memory
 letter = atol_mapping.get(atol_memory, "X")  # "X" si el valor no está en la tabla

@@ -164,21 +164,21 @@ if __name__ == '__main__':
     print("Config_file >>>>> ",config_name)
     json_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.json")  # Cambia esto a la ruta deseada
     if not os.path.exists(json_file_path):
-     print(f"⚠️ Archivo {json_file_path} no encontrado. Creándolo...")
-     with open(json_file_path, "w") as file:
-        json.dump({"experiment_name": "default_experiment"}, file, indent=4)
-    
+        print(f"⚠️ Archivo {json_file_path} no encontrado. Creándolo...")
+        with open(json_file_path, "w") as file:
+            json.dump({"experiment_name": "default_experiment"}, file, indent=4)
+        
     
     
     with open(json_file_path, "r") as file:
-        config = json.safe_load(file)
+        config = json.load(file)
 
     # Agregar `map_name` sin modificar otros valores
     config["experiment_name"] = map_name
 
     # Guardar el archivo YAML con el nuevo valor
-    with open(jason_file_path, "w") as file:
-        json.dump(config, file, default_flow_style=False)
+    with open(json_file_path, "w") as file:
+        json.dump(config, file, indent=4)
 
     print(f" Parámetro 'experiment_name' actualizado con el valor: {map_name}")
 
