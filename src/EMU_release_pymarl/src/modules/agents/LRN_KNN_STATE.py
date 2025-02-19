@@ -166,7 +166,14 @@ class LRU_KNN_STATE:
         key_norm = ((key - self.x_mu) / self.x_sigma) # check element-wise operation
 
         #if np.allclose(key_embed_hat, key_embed, rtol=self.rtol, atol=self.atol ):
+        print(np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol ))
+
         if np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol ):
+            print("Comparando:", self.states_norm[ind], key_norm)
+            print("Diferencia absoluta:", np.abs(self.states_norm[ind] - key_norm))
+            print("Tolerancia permitida:", self.atol + self.rtol * np.abs(key_norm))
+            print("Resultado de np.allclose:", np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol))
+
             self.lru[ind] = self.tm # update its updated time            
             self.tm +=0.01
             if modify:
