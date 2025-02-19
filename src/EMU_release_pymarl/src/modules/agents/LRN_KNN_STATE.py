@@ -14,7 +14,7 @@ import yaml
 
 
 SAVE_PATH = os.path.expanduser("~/pruebas/MLRC-EMU/results") 
-yaml_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/EMU_sc2.yaml")  # Cambia esto a la ruta deseada
+yaml_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.yaml")  # Cambia esto a la ruta deseada
 
 # Mapeo de atol_memory a su respectiva letra
 atol_mapping = {
