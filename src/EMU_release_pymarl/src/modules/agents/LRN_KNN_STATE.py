@@ -14,8 +14,8 @@ import yaml
 
 
 SAVE_PATH = os.path.expanduser("~/pruebas/MLRC-EMU/results") 
-yaml_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.yaml")  # Cambia esto a la ruta deseada
-
+yaml_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/EMU_sc2.yaml")  # Cambia esto a la ruta deseada
+json_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.json")
 # Mapeo de atol_memory a su respectiva letra
 atol_mapping = {
     0.00000013: "A",
@@ -29,9 +29,11 @@ with open(yaml_file_path, "r") as file:
 
 # Obtener valores del YAML
 atol_memory = config.get("atol_memory")
-nombre_experiemnto = config.get("experiment_name")
-memory_emb_type = config.get("memory_emb_type")
 
+memory_emb_type = config.get("memory_emb_type")
+with open(json_file_path, "r") as file:
+    config2 = json.safe_load(file)
+nombre_experiemnto = config2.get("experiment_name")
 # Determinar la letra correspondiente a atol_memory
 letter = atol_mapping.get(atol_memory, "X")  # "X" si el valor no está en la tabla
 

@@ -12,6 +12,7 @@ from utils.logging import get_logger
 import yaml
 import datetime
 import time
+import json
 
 from run import run
 ###
@@ -161,16 +162,16 @@ if __name__ == '__main__':
     config_dict['env_args']['map_name'] = map_name
 
     print("Config_file >>>>> ",config_name)
-    yaml_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.yaml")  # Cambia esto a la ruta deseada
-    with open(yaml_file_path, "r") as file:
-        config = yaml.safe_load(file)
+    jason_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.json")  # Cambia esto a la ruta deseada
+    with open(jason_file_path, "r") as file:
+        config = json.safe_load(file)
 
     # Agregar `map_name` sin modificar otros valores
     config["experiment_name"] = map_name
 
     # Guardar el archivo YAML con el nuevo valor
-    with open(yaml_file_path, "w") as file:
-        yaml.dump(config, file, default_flow_style=False)
+    with open(jason_file_path, "w") as file:
+        json.dump(config, file, default_flow_style=False)
 
     print(f" Parámetro 'experiment_name' actualizado con el valor: {map_name}")
 
