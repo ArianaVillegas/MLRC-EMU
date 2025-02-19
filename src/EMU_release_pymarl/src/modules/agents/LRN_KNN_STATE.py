@@ -10,8 +10,37 @@ from components.PenalizationManager import PenalizationManager
 import time
 import json
 import os
+import yaml
 
-SAVE_PATH = os.path.expanduser("~/pruebas/MLRC-EMU/results")  
+
+SAVE_PATH = os.path.expanduser("~/pruebas/MLRC-EMU/results") 
+yaml_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/EMU_sc2.yaml")  # Cambia esto a la ruta deseada
+
+# Mapeo de atol_memory a su respectiva letra
+atol_mapping = {
+    0.00000013: "A",
+    0.000013: "B",
+    0.0013: "C",
+    0.013: "D"
+}
+# Leer el archivo YAML
+with open(yaml_file_path, "r") as file:
+    config = yaml.safe_load(file)
+
+# Obtener valores del YAML
+atol_memory = config.get("atol_memory")
+nombre_experiemnto = config.get("experiment_name")
+memory_emb_type = config.get("memory_emb_type")
+
+# Determinar la letra correspondiente a atol_memory
+letter = atol_mapping.get(atol_memory, "X")  # "X" si el valor no está en la tabla
+
+# Crear el identificador (Ejemplo: B2, C3, etc.)
+experiment_id = f"{nombre_experiemnto}_{letter}{memory_emb_type}"
+
+# Definir la carpeta donde se guardará el archivo
+
+
 
 def inverse_distance(h, h_i, epsilon=1e-3):
     #return 1 / (th.dist(h, h_i) + epsilon)
@@ -95,7 +124,8 @@ class LRU_KNN_STATE:
         if not os.path.exists(SAVE_PATH):
              os.makedirs(SAVE_PATH)
         self.experiment_start_time = time.strftime("%Y%m%d_%H%M%S")  # AñoMesDía_HoraMinutoSegundo
-        self.log_file = os.path.join(SAVE_PATH, f"log_peek_modified_EC_{self.experiment_start_time}.json")
+        self.log_file = os.path.join(SAVE_PATH, f"EC_{experiment_id}_{self.experiment_start_time}.json")
+      
         if not os.path.exists(self.log_file):
             data = {
                 "tiempo": {"inicio": time.time(), "fin": None},
@@ -205,7 +235,7 @@ class LRU_KNN_STATE:
                 "Diferencia_absoluta": diff_abs.tolist(),
                 "Tolerancia_permitida": tolerance.tolist(),
                 "decay": value_decay,
-                "tiempo": [exec_time]  # 🔹 **Se guarda el tiempo de la ejecución**
+                
             }
 
 
@@ -233,6 +263,8 @@ class LRU_KNN_STATE:
                     Nuevo_incentivo = self.aumento_de_penalizacion(ind)
                     value_decay_penalizado = value_decay - Nuevo_incentivo
                     print("valor deay ",value_decay)
+                    print("nuevo incentivo",Nuevo_incentivo)
+
                     
 
                     if value_decay_penalizado > self.q_values_decay[ind]: 

@@ -1,5 +1,5 @@
 # --- Qatten specific parameters ---
-
+experiment_name: "nombre"
 # use epsilon greedy action selector
 action_selector: "epsilon_greedy"
 epsilon_start: 1.0

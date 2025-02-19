@@ -13,14 +13,14 @@ class PenalizationManager:
     def penalizacion_sigmoide(self, Ncall):
         if Ncall > self.umbral_visitas:
              numero= self.penalizacion_maxima / (1 + np.exp(-self.beta_penalizacion * (Ncall - self.umbral_visitas)))
-             print(f"Penalización aplicada: {numero}")
+             
              return numero
     
         return 0
     def penalizacion_sigmoide_mejorada(self ,Ncall):
         if Ncall > self.umbral_visitas:
              numero= self.penalizacion_maxima * (1 - np.exp(-self.beta_penalizacion * (Ncall - self.umbral_visitas)))
-             print(f"Penalización aplicada: {numero}")
+            
              return numero
 
 
