@@ -10,8 +10,8 @@ experiments=(
     [EMU_sc2_hard_cds_3s5z_vs_3s6z]="3s5z_vs_3s6z"
     [EMU_sc2_hard_6h_vs_8z]="6h_vs_8z"
     [EMU_sc2_hard_cds_6h_vs_8z]="6h_vs_8z"
-    [EMU_sc2_hard_cds_MMM2]="MM2"
-    [EMU_sc2_hard_MMM2]="MM2"
+    [EMU_sc2_hard_cds_MMM2]="MMM2"
+    [EMU_sc2_hard_MMM2]="MMM2"
 )
 
 # Define maps with indexes
@@ -22,7 +22,7 @@ map_indexes=(
     [3]="5m_vs_6m"
     [4]="3s5z_vs_3s6z"
     [5]="6h_vs_8z"
-    [6]="MM2"
+    [6]="MMM2"
 )
 
 # Get maps to execute from command-line arguments
