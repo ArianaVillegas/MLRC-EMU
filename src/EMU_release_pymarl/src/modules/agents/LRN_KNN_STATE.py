@@ -8,7 +8,10 @@ from sys import platform
 import numpy as np
 from components.PenalizationManager import PenalizationManager
 import time
+import json
+import os
 
+SAVE_PATH = os.path.expanduser("~/pruebas/MLRC-EMU/results")  
 
 def inverse_distance(h, h_i, epsilon=1e-3):
     #return 1 / (th.dist(h, h_i) + epsilon)
@@ -88,6 +91,23 @@ class LRU_KNN_STATE:
         self.beta_penalizacion = 0.1  # Controla la suavidad de la penalización
         self.agent_id = 0
         self.access_logs = {}  # Diccionario para registrar accesos
+        # 🔹 Generar nombre del archivo SOLO UNA VEZ al inicio del experimento
+        if not os.path.exists(SAVE_PATH):
+             os.makedirs(SAVE_PATH)
+        self.experiment_start_time = time.strftime("%Y%m%d_%H%M%S")  # AñoMesDía_HoraMinutoSegundo
+        self.log_file = os.path.join(SAVE_PATH, f"log_peek_modified_EC_{self.experiment_start_time}.json")
+        if not os.path.exists(self.log_file):
+            data = {
+                "tiempo": {"inicio": time.time(), "fin": None},
+                "ejecuciones": [],
+                "penalizacion": {
+                    "decay_values": [],
+                    "penalizacion_values": [],
+                    "tiempo": []
+                }
+            }
+            with open(self.log_file, "w") as json_file:
+                json.dump(data, json_file, indent=4)
        
     def iniciarId(self , id , diccioanrio):
         self.access_logs=diccioanrio
@@ -144,11 +164,14 @@ class LRU_KNN_STATE:
         # output: H(key_hat), xi(key_hat) 
 
         ###
-        if self.agent_id not in self.access_logs :
-            self.access_logs[self.agent_id] = 0  # Inicializar contador
+        with open(self.log_file, "r") as json_file:
+            data = json.load(json_file)
     
-        self.access_logs[self.agent_id] += 1  # Contabilizar acceso
-       
+        
+        
+
+        # Tiempo actual de ejecución
+        exec_time = time.time()       
         
         
 
@@ -166,14 +189,25 @@ class LRU_KNN_STATE:
         key_norm = ((key - self.x_mu) / self.x_sigma) # check element-wise operation
 
         #if np.allclose(key_embed_hat, key_embed, rtol=self.rtol, atol=self.atol ):
-        print("Comparando: if")
-        print(np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol ))
+        
 
         if np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol ):
-            print("Comparando:", self.states_norm[ind], key_norm)
-            print("Diferencia absoluta:", np.abs(self.states_norm[ind] - key_norm))
-            print("Tolerancia permitida:", self.atol + self.rtol * np.abs(key_norm))
-            print("Resultado de np.allclose:", np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol))
+            diff_abs = np.abs(self.states_norm[ind] - key_norm)
+            tolerance = self.atol + self.rtol * np.abs(key_norm)
+
+            # **Registro de la ejecución**
+            registro = {
+                "tiempoDECAY": exec_time,
+                "vectores_comparados": {
+                    "vector1": self.states_norm[ind].tolist(),
+                    "vector2": key_norm.tolist()
+                },
+                "Diferencia_absoluta": diff_abs.tolist(),
+                "Tolerancia_permitida": tolerance.tolist(),
+                "decay": value_decay,
+                "tiempo": [exec_time]  # 🔹 **Se guarda el tiempo de la ejecución**
+            }
+
 
             self.lru[ind] = self.tm # update its updated time            
             self.tm +=0.01
@@ -199,14 +233,22 @@ class LRU_KNN_STATE:
                     Nuevo_incentivo = self.aumento_de_penalizacion(ind)
                     value_decay_penalizado = value_decay - Nuevo_incentivo
                     print("valor deay ",value_decay)
+                    
 
                     if value_decay_penalizado > self.q_values_decay[ind]: 
                         self.q_values_decay[ind] = value_decay
+                        registro["penalizacion"] = Nuevo_incentivo 
+                        data["penalizacion"]["decay_values"].append(value_decay)
+                        data["penalizacion"]["penalizacion_values"].append(Nuevo_incentivo)
+                        data["penalizacion"]["tiempo"].append(exec_time)
 
                                     
             rcnt = float(self.Nxi[ind] / (self.Ncall[ind] + self.epsilon))
+            data["ejecuciones"].append(registro)
+            data["tiempo"]["fin"] = time.time()
+            with open(self.log_file, "w") as json_file:
+                json.dump(data, json_file, indent=4)
             
-
             return self.q_values_decay[ind], float(self.xi[ind]), rcnt
         
         return None, None, None
