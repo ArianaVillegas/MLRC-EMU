@@ -157,6 +157,19 @@ class LRU_KNN_STATE:
                                     
             rcnt = float(self.Nxi[ind] / (self.Ncall[ind] + self.epsilon))
 
+            try:
+                with open("t-sne.json", "w") as f:
+                    data_tsne = {
+                        "q_values": self.q_values_decay[ind],
+                        "xi": float(self.xi[ind]),
+                        "rcnt": rcnt,
+                        "cur_time": cur_time,
+                        }
+                    json.dump(data_tsne, f, indent=4)  # indent for readability
+                print(f"Data successfully saved to {"t-sne.json"}")
+            except Exception as e:
+                print(f"Error saving data to t-sne.json: {e}")
+            
             return self.q_values_decay[ind], float(self.xi[ind]), rcnt
         
         return None, None, None
