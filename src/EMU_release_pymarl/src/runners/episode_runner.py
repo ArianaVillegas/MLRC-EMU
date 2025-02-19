@@ -69,17 +69,17 @@ class EpisodeRunner:
             reward, terminated, env_info = self.env.step(actions[0].cpu())
             episode_return += reward
 
-            if  ('EMU' in self.args.name ) and ('sc2' in self.args.env or 'academy' in self.args.env):
+            if  ('EMU' in self.args.name ) and ('sc2' in self.args.env):
 
-                if 'academy' in self.args.env:
-                    post_transition_data = {
-                            "actions": actions,
-                            "reward": [(reward,)],
-                            "terminated": [(terminated != env_info.get("episode_limit", False),)],
-                            "flag_win": [(bool(env_info['score_reward']),)],                        
-                    }
-                else:
-                    post_transition_data = {
+                # if 'academy' in self.args.env:
+                #     post_transition_data = {
+                #             "actions": actions,
+                #             "reward": [(reward,)],
+                #             "terminated": [(terminated != env_info.get("episode_limit", False),)],
+                #             "flag_win": [(bool(env_info['score_reward']),)],                        
+                #     }
+                # else:
+                post_transition_data = {
                             "actions": actions,
                             "reward": [(reward,)],
                             "terminated": [(terminated != env_info.get("episode_limit", False),)],

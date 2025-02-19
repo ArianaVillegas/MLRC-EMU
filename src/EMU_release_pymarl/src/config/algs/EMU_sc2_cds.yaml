@@ -33,8 +33,8 @@ is_stop_gradient: True
 #.. hypers-parameter
 ec_buffer_stats_update_interval   : 200 #200
 ec_buffer_embedder_update_interval: 10000  # 10000
-emb_training_batch                : 102400 # 102400 (10% sample)
-emb_training_mini_batch           : 1024
+emb_training_batch                : 204800 # 102400 (10% sample)
+emb_training_mini_batch           : 2048
 t_EC_update                       : 0
 buffer_size_update                : 5000 # shuold be smaller than buffer_size
 

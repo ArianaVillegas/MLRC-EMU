@@ -106,10 +106,10 @@ class QPLEX_curiosity_vdn_Learner:
             target_max_qvals = target_mac_out.max(dim=3)[0]
 
         # Mix
-        if 'academy' in self.args.env:
-            additional_input = obs=batch["obs"][:, :-1]  # for cds_gfootball
-        else:
-            additional_input = None
+        # if 'academy' in self.args.env:
+        #     additional_input = obs=batch["obs"][:, :-1]  # for cds_gfootball
+        # else:
+        additional_input = None
 
         if mixer is not None:
             if self.args.mixer == "dmaq_qatten":

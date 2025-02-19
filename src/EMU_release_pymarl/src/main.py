@@ -1,4 +1,3 @@
-from unittest.util import _count_diff_hashable
 import numpy as np
 import os
 import collections
@@ -11,7 +10,7 @@ import sys
 import torch as th
 from utils.logging import get_logger
 import yaml
-
+import datetime
 from run import run
 
 SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
@@ -88,13 +87,12 @@ def _get_config_alg(params, arg_name, subfolder, map_name):
         else:
             config_name="EMU_sc2_hard_MMM2"    
     else:
-        
-        if "academy" in map_name:
-            if 'cds' in config_name_default: 
-                config_name="EMU_grf_cds"
-            else:
-                config_name="EMU_grf"
-        else:
+        # if "academy" in map_name:
+        #     if 'cds' in config_name_default: 
+        #         config_name="EMU_grf_cds"
+        #     else:
+        #         config_name="EMU_grf"
+
             if 'cds' in config_name_default: 
                 config_name="EMU_sc2_cds"
             else:
@@ -143,10 +141,10 @@ if __name__ == '__main__':
     env_config= _get_config_env(params, "--env-config", "envs")
     config_dict = recursive_dict_update(config_dict, env_config)
     
-    if "academy" in env_config['env']:
-        map_name=env_config['env']
-    else:
-        map_name=env_config['env_args']['map_name']
+    # if "academy" in env_config['env']:
+    #     map_name=env_config['env']
+    # else:
+    map_name=env_config['env_args']['map_name']
     
     for _i, _v in enumerate(params):
         if _v.split("=")[0] == "env_args.map_name":
@@ -154,7 +152,9 @@ if __name__ == '__main__':
         
     print("Map_name    >>>>> ",map_name)
     alg_config, config_name = _get_config_alg(params, "--config", "algs", map_name)
-    
+    config_dict['config_name'] = config_name
+    config_dict['env_args']['map_name'] = map_name
+
     print("Config_file >>>>> ",config_name)
     config_dict = recursive_dict_update(config_dict, alg_config)
     
@@ -170,11 +170,11 @@ if __name__ == '__main__':
     else:
         cur_config_name = config_dict['config_name']
     if config_dict['env_args']['map_name'] == '':
+        print("No map_name specified")
         save_folder = cur_config_name 
     else:
-        save_folder = cur_config_name + '_' + config_dict['env_args']['map_name']
+        save_folder = cur_config_name + '_' + config_dict['env_args']['map_name'] + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    save_folder   = cur_config_name
     file_obs_path = os.path.join(file_obs_path, save_folder )
     ex.observers.append(FileStorageObserver.create(file_obs_path))
 
