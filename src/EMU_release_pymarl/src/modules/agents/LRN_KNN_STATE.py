@@ -158,7 +158,7 @@ class LRU_KNN_STATE:
             rcnt = float(self.Nxi[ind] / (self.Ncall[ind] + self.epsilon))
 
             try:
-                with open("t-sne.json", "w") as f:
+                with open("/home/mauricionieto/Documentos/GitHub/MLRC-EMU/results/t_sne.json", "w") as f:
                     data_tsne = {
                         "q_values": self.q_values_decay[ind],
                         "xi": float(self.xi[ind]),
@@ -166,9 +166,9 @@ class LRU_KNN_STATE:
                         "cur_time": cur_time,
                         }
                     json.dump(data_tsne, f, indent=4)  # indent for readability
-                print(f"Data successfully saved to {"t-sne.json"}")
+                print(f"Data successfully saved to t_sne.json")
             except Exception as e:
-                print(f"Error saving data to t-sne.json: {e}")
+                print(f"Error saving data to t_sne.json: {e}")
             
             return self.q_values_decay[ind], float(self.xi[ind]), rcnt
         
