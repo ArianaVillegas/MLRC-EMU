@@ -39,7 +39,7 @@ t_EC_update                       : 0
 buffer_size_update                : 5000 # shuold be smaller than buffer_size
 
 rtol_memory  : 0.0        # default: 0.0
-atol_memory  : 0.013   # default: 1.3e-5
+atol_memory  : 0.0013   # default: 1.3e-5
 
 #.. control variables
 memory_emb_type     : 3      # memory construction based on - 1: x_dim + random projection, 2: state (global) + embedding function, 3: state (global) + embedding with reconstruuction loss

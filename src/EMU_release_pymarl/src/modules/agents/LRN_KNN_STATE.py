@@ -263,19 +263,11 @@ class LRU_KNN_STATE:
                     self.tg[ind]          = cur_time
                 
                 else: # update Qval (value_decay: current Return)    
-                   
-                    Nuevo_incentivo = self.aumento_de_penalizacion(ind)
-                    value_decay_penalizado = value_decay - Nuevo_incentivo
-                    print("valor deay ",value_decay)
-                    print("nuevo incentivo",Nuevo_incentivo)
-
-                    
-
-                    if value_decay_penalizado > self.q_values_decay[ind]: 
+                
+                    if value_decay  > self.q_values_decay[ind]: 
                         self.q_values_decay[ind] = value_decay
-                        registro["penalizacion"] = Nuevo_incentivo 
+                         
                         data["penalizacion"]["decay_values"].append(value_decay)
-                        data["penalizacion"]["penalizacion_values"].append(Nuevo_incentivo)
                         data["penalizacion"]["tiempo"].append(exec_time)
 
                                     
