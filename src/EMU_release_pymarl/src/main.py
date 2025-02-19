@@ -162,8 +162,15 @@ if __name__ == '__main__':
     config_dict['env_args']['map_name'] = map_name
 
     print("Config_file >>>>> ",config_name)
-    jason_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.json")  # Cambia esto a la ruta deseada
-    with open(jason_file_path, "r") as file:
+    json_file_path= os.path.expanduser("~/pruebas/MLRC-EMU/src/EMU_release_pymarl/src/config/algs/nombre.json")  # Cambia esto a la ruta deseada
+    if not os.path.exists(json_file_path):
+     print(f"⚠️ Archivo {json_file_path} no encontrado. Creándolo...")
+     with open(json_file_path, "w") as file:
+        json.dump({"experiment_name": "default_experiment"}, file, indent=4)
+    
+    
+    
+    with open(json_file_path, "r") as file:
         config = json.safe_load(file)
 
     # Agregar `map_name` sin modificar otros valores
