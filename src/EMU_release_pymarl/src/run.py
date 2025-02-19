@@ -19,11 +19,13 @@ from utils.torch_utils import to_cuda
 from modules.agents.LRN_KNN import LRU_KNN
 from modules.agents.LRN_KNN_STATE import LRU_KNN_STATE
 from components.episodic_memory_buffer import Episodic_memory_buffer
+from components.PenalizationManager import PenalizationManager
 
 import numpy as np
 import copy as cp
 import random
 import time
+
 
 def run(_run, _config, _log):
 
@@ -51,7 +53,7 @@ def run(_run, _config, _log):
     _log.info("\n\n" + experiment_params + "\n")
 
     # configure tensorboard logger
-    unique_token = "{}__{}".format(args.config_name, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+    unique_token = "{}__{}".format(args.name, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
     args.unique_token = unique_token
     if args.use_tensorboard:
         tb_logs_direc = os.path.join(dirname(dirname(abspath(__file__))), "results", "tb_logs", args.env,

@@ -6,6 +6,9 @@ import torch as th
 import pickle
 from sys import platform
 import numpy as np
+from components.PenalizationManager import PenalizationManager
+import time
+
 
 def inverse_distance(h, h_i, epsilon=1e-3):
     #return 1 / (th.dist(h, h_i) + epsilon)
@@ -13,7 +16,7 @@ def inverse_distance(h, h_i, epsilon=1e-3):
 
 class LRU_KNN_STATE:
     def __init__(self, capacity, state_dim, args, env_name, random_projection, state_embed_net=None):
-
+        
         z_dim = args.emdqn_latent_dim
 
         self.env_name = env_name
@@ -76,7 +79,19 @@ class LRU_KNN_STATE:
         self.bufpath = './buffer/%s'%self.env_name
         self.build_tree_times = 0
         self.build_tree = False
+        # Instanciamos la clase de penalización
+        self.penalization_manager = PenalizationManager()
 
+
+        self.umbral_visitas = 50  # Cantidad de visitas antes de penalizar
+        self.penalizacion_maxima = 0.5  # Penalización máxima posible
+        self.beta_penalizacion = 0.1  # Controla la suavidad de la penalización
+        self.agent_id = 0
+        self.access_logs = {}  # Diccionario para registrar accesos
+       
+    def iniciarId(self , id , diccioanrio):
+        self.access_logs=diccioanrio
+        self.agent_id =id
     def update_states_norm(self):   
         if self.build_tree == False:
             return
@@ -110,12 +125,36 @@ class LRU_KNN_STATE:
                 self.rtol = self.rtol_monitor
         else:
             self.states_norm = self.states
+        
+        
     
         #.. modified version ----------------------------------------------------------------------------------------------------------
-    def peek_modified_EC(self, key, value_decay, xit, modify, global_state, cur_time):
+
+    def aumento_de_penalizacion(self, ind):
+        """Aplica una penalización si un estado ha sido visitado demasiadas veces."""
+        if ind >= self.Ncall.shape[0]:
+            return 0  # Evita index out of bounds
+
+        if self.Ncall[ind] > self.umbral_visitas:
+            # Penalización sigmoide
+            penalizacion = self.penalization_manager.penalizacion_sigmoide_mejorada(self.Ncall[ind])
+            return penalizacion
+        return 0  # Sin penalización
+
+
+    def peek_modified_EC(self,key, value_decay, xit, modify, global_state, cur_time):
         # input: key: global state
         # input: Rt, xi, modify
         # output: H(key_hat), xi(key_hat) 
+
+        ###
+        if self.agent_id not in self.access_logs :
+            self.access_logs[self.agent_id] = 0  # Inicializar contador
+    
+        self.access_logs[self.agent_id] += 1  # Contabilizar acceso
+        print(f"Agente {self.agent_id} accedió a la memoria {self.access_logs[self.agent_id]} veces")
+        
+        
 
         if modify == False:
             checkpoint = 1
@@ -151,11 +190,18 @@ class LRU_KNN_STATE:
                         self.Nxi[ind]         = 1
                     self.tg[ind]          = cur_time
                 
-                else: # update Qval (value_decay: current Return)        
-                    if value_decay > self.q_values_decay[ind]: 
+                else: # update Qval (value_decay: current Return)    
+                   
+                    Nuevo_incentivo = self.aumento_de_penalizacion(ind)
+                    value_decay_penalizado = value_decay - Nuevo_incentivo
+                    print("valor deay ",value_decay)
+
+                    if value_decay_penalizado > self.q_values_decay[ind]: 
                         self.q_values_decay[ind] = value_decay
+
                                     
             rcnt = float(self.Nxi[ind] / (self.Ncall[ind] + self.epsilon))
+            
 
             return self.q_values_decay[ind], float(self.xi[ind]), rcnt
         
