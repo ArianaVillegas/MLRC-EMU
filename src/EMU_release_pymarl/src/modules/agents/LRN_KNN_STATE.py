@@ -148,7 +148,7 @@ class LRU_KNN_STATE:
             self.access_logs[self.agent_id] = 0  # Inicializar contador
     
         self.access_logs[self.agent_id] += 1  # Contabilizar acceso
-        print(f"Agente {self.agent_id} accedió a la memoria {self.access_logs[self.agent_id]} veces")
+       
         
         
 
