@@ -1,0 +1,114 @@
+## Exp_EMU_cds.yaml
+# --- Qatten specific parameters ---
+
+# Exploration with epsilon-greedy
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 100000  # Longer time to improve exploration
+
+runner: "episode"
+
+buffer_size: 10000  # Increased to prevent forgetting valuable experiences
+
+# Target network update frequency
+target_update_interval: 250  # More stability
+
+# Reinforcement learning
+agent_output_type: "q"
+learner: "qplex_curiosity_vdn_learner_cds"
+double_q: True
+mixer: "dmaq_qatten"
+mixing_embed_dim: 32
+hypernet_embed: 64
+adv_hypernet_layers: 1
+adv_hypernet_embed: 64
+
+num_kernel: 4
+is_minus_one: True
+is_adv_attention: True
+is_stop_gradient: True
+
+#.. Episodic memory parameters ---------------------------------
+
+ec_buffer_stats_update_interval   : 200
+ec_buffer_embedder_update_interval: 8000  # More frequent to improve embeddings
+emb_training_batch                : 102400  # Prevents overtraining
+emb_training_mini_batch           : 1024
+t_EC_update                       : 0
+buffer_size_update                : 10000  # Greater data retention
+
+rtol_memory  : 0.0        
+atol_memory  : 0.00005  # Increased for greater tolerance in state comparison
+
+# Control variables
+memory_emb_type     : 3
+emb_out_type        : 3
+encoder_type        : 1
+use_AEM             : True
+flag_stats_norm     : True
+delta_cover_type    : 1
+fixed_delta         : True
+additional_update   : True
+optimality_incentive: True
+optimality_type     : 1
+flag_memory_cnt_reset: False
+flag_init_desirability: True  # Enabled to improve retention of useful states
+
+# Hyperparameters specific to memory_emb_type==3
+lambda_s         : 0.1
+lambda_kl        : 0.0001
+
+#--------------------------------------------------
+
+# Qatten coefficients
+n_head: 4
+attend_reg_coef: 0.001
+state_bias: True
+mask_dead: False
+weighted_head: False
+nonlinear: False
+
+num_circle: 1
+
+# --- Agent parameters ---
+agent: "rnn_sd"
+rnn_hidden_dim: 64
+obs_agent_id: False
+obs_last_action: True
+mac: "basic_mac_cds"
+
+# --- Hyperparameters for CDS ---
+beta: 0.0
+beta1: 2.0
+beta2: 1.0
+anneal: False
+anneal_rate: 3.
+
+burn_in_period: 100
+
+# Curiosity-driven exploration
+curiosity_scale: 0.005  # Increased to encourage exploration
+curiosity_decay: True
+curiosity_decay_rate: 0.95  # Slower decay for sustained exploration
+curiosity_decay_cycle: 150000  # More gradual
+curiosity_decay_stop: 0.01  # Small continuous incentive
+
+save_buffer: False
+
+use_individual_Q: False
+individual_q_loss_weight: 0.01
+
+is_prioritized_buffer: False
+use_emdqn: True
+emdqn_loss_weight: 0.1
+
+emdqn_buffer_size: 2000000  # Greater capacity without saturation
+emdqn_latent_dim: 4
+
+soft_update_tau: 0.002  # Smoother for learning stability
+vdn_soft_update: True
+predict_vdn_target: True
+predict2_vdn_target: True
+use_qtotal_td: False
+name: "EMU_sc2_optimized"

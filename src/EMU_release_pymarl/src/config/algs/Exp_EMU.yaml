@@ -1,0 +1,101 @@
+# --- Qatten specific parameters ---
+
+# Exploration - Epsilon adjustment
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 100000  # Increased to avoid premature exploitation
+
+runner: "episode"
+
+buffer_size: 10000  # Increased to store more useful experiences
+
+# Target network update frequency
+target_update_interval: 250  # Increased for stability
+
+# Reinforcement learning
+agent_output_type: "q"
+learner: "qplex_curiosity_vdn_learner"
+double_q: True
+mixer: "dmaq_qatten"
+mixing_embed_dim: 32
+hypernet_embed: 64
+adv_hypernet_layers: 1
+adv_hypernet_embed: 64
+
+num_kernel: 4
+is_minus_one: True
+is_adv_attention: True
+is_stop_gradient: True
+
+#.. EMU (Episodic Memory Unit) ---------------------------------
+
+# Episodic memory parameters
+ec_buffer_stats_update_interval   : 200
+ec_buffer_embedder_update_interval: 8000  # Decreased for more frequent updates
+emb_training_batch                : 102400  #  Reduced to prevent overtraining
+emb_training_mini_batch           : 1024
+t_EC_update                       : 0
+buffer_size_update                : 10000  # Increased for more retention
+
+rtol_memory  : 0.0        
+atol_memory  : 0.00005  # Increased to be more tolerant in state comparison
+# 5x10-5
+
+# Control variables
+memory_emb_type     : 3
+emb_out_type        : 3
+encoder_type        : 1
+use_AEM             : True
+flag_stats_norm     : True
+delta_cover_type    : 1
+fixed_delta         : True
+additional_update   : True
+optimality_incentive: True
+optimality_type     : 1
+flag_memory_cnt_reset: False
+flag_init_desirability: True  # Restored to improve the formation of connections in episodic memory
+
+# Hyperparameters specific to memory_emb_type==3
+lambda_s         : 0.1
+lambda_kl        : 0.0001
+
+#--------------------------------------------------
+
+# Qatten coefficients
+n_head: 4
+attend_reg_coef: 0.001
+state_bias: True
+mask_dead: False
+weighted_head: False
+nonlinear: False
+
+num_circle: 1
+
+# Exploration by curiosity
+curiosity_scale: 0.005  # Increased to encourage exploration
+curiosity_decay: True
+curiosity_decay_rate: 0.95  # Less decay to maintain curiosity for a longer time
+curiosity_decay_cycle: 150000  # More gradual
+curiosity_decay_stop: 0.01  # Maintains a low but constant incentive
+
+save_buffer: False
+
+mac: "fast_mac"
+agent: "rnn_fast"
+use_individual_Q: False
+individual_q_loss_weight: 0.01
+
+is_prioritized_buffer: False
+use_emdqn: True
+emdqn_loss_weight: 0.1
+
+emdqn_buffer_size: 2000000  # Increased to allow more storage without saturation
+emdqn_latent_dim: 4
+
+soft_update_tau: 0.002  # Decreased to make changes to the network smoother
+vdn_soft_update: True
+predict_vdn_target: True
+predict2_vdn_target: True
+use_qtotal_td: False
+name: "EMU_sc2_optimized"
