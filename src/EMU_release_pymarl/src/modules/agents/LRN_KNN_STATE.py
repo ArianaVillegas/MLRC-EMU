@@ -132,15 +132,11 @@ class LRU_KNN_STATE:
 
     def aumento_de_penalizacion(self, ind):
         """Aplica una penalización si un estado ha sido visitado demasiadas veces."""
-        if ind >= self.Ncall.shape[0]:
-            return 0  # Evita index out of bounds
+            
+        penalizacion = self.penalization_manager.penalizacion_sigmoide_mejorada(self.Ncall[ind])
 
-        if self.Ncall[ind] > self.umbral_visitas:
-            # Penalización sigmoide
-            penalizacion = self.penalization_manager.penalizacion_sigmoide_mejorada(self.Ncall[ind])
-            return penalizacion
-        return 0  # Sin penalización
-
+        return penalizacion
+      
 
     def peek_modified_EC(self,key, value_decay, xit, modify, global_state, cur_time):
         # input: key: global state
