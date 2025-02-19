@@ -238,7 +238,7 @@ class LRU_KNN_STATE:
                 },
                 "Diferencia_absoluta": diff_abs.tolist(),
                 "Tolerancia_permitida": tolerance.tolist(),
-                "decay": value_decay,
+                "decay": value_decay.item() if isinstance(value_decay, th.Tensor) else value_decay,
                 
             }
 
