@@ -11,7 +11,7 @@ import sys
 import torch as th
 from utils.logging import get_logger
 import yaml
-
+import datetime
 from run import run
 
 SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
@@ -154,7 +154,9 @@ if __name__ == '__main__':
         
     print("Map_name    >>>>> ",map_name)
     alg_config, config_name = _get_config_alg(params, "--config", "algs", map_name)
-    
+    config_dict['config_name'] = config_name
+    config_dict['env_args']['map_name'] = map_name
+
     print("Config_file >>>>> ",config_name)
     config_dict = recursive_dict_update(config_dict, alg_config)
     
@@ -172,9 +174,9 @@ if __name__ == '__main__':
     if config_dict['env_args']['map_name'] == '':
         save_folder = cur_config_name 
     else:
-        save_folder = cur_config_name + '_' + config_dict['env_args']['map_name']
+        save_folder = cur_config_name + '_' + config_dict['env_args']['map_name'] + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    save_folder   = cur_config_name
+
     file_obs_path = os.path.join(file_obs_path, save_folder )
     ex.observers.append(FileStorageObserver.create(file_obs_path))
 
