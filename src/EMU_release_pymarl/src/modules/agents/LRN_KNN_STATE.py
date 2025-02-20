@@ -238,7 +238,9 @@ class LRU_KNN_STATE:
                 },
                 "Diferencia_absoluta": diff_abs.tolist(),
                 "Tolerancia_permitida": tolerance.tolist(),
-                "decay": value_decay.item() if isinstance(value_decay, th.Tensor) else value_decay,
+
+                #"decay": value_decay.tolist(), 
+                "decay":value_decay.tolist() if value_decay is not None else []  # Lista vacía si value_decay es None
                 
             }
 
@@ -274,7 +276,7 @@ class LRU_KNN_STATE:
                     if value_decay_penalizado > self.q_values_decay[ind]: 
                         self.q_values_decay[ind] = value_decay
                         registro["penalizacion"] = Nuevo_incentivo 
-                        data["penalizacion"]["decay_values"].append(value_decay)
+                        data["penalizacion"]["decay_values"].append(value_decay.tolist())
                         data["penalizacion"]["penalizacion_values"].append(Nuevo_incentivo)
                         data["penalizacion"]["tiempo"].append(exec_time)
 
