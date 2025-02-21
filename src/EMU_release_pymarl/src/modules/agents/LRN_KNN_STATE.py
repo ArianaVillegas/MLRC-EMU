@@ -267,7 +267,7 @@ class LRU_KNN_STATE:
                 else: # update Qval (value_decay: current Return)    
                    
                     Nuevo_incentivo = self.aumento_de_penalizacion(ind)
-                    value_decay_penalizado = value_decay - Nuevo_incentivo
+                    Nuevo_incentivo = np.array(Nuevo_incentivo)
                     print("valor deay ",value_decay)
                     print("nuevo incentivo",Nuevo_incentivo)
 
