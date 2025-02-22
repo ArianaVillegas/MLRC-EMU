@@ -4,7 +4,7 @@ This repository contains experiments and extensions developed for the MLRC Chall
 
 ## Project Overview
 
-The MLRC Challenge aims to address [...].
+The MLRC Challenge aims to address the issue of reproducibility in machine learning research by providing a platform for researchers to validate and extend existing methodologies. The challenge involves replicating the results of a selected paper and then proposing extensions or improvements to the original work. Our project focuses on the EMU methodology, which leverages episodic memory to enhance cooperative multi-agent reinforcement learning (MARL) performance.
 
 ## EMU Repository and Paper
 
@@ -16,6 +16,15 @@ This work is based on the EMU methodology as described in:
   - Link: https://arxiv.org/abs/2403.01112
 
 - **EMU Repository**: [GitHub Repository Link](https://github.com/HyunghoNa/EMU/tree/main).
+
+## Contributions and Extensions
+
+This repository includes:
+
+- A systematic replication of the EMU framework Na et al. (2024), focusing on reproducible experiments while documenting implementation challenges and resource requirements. This validation effort strengthens the theoretical foundations of episodic control in MARL.
+- Adaptation of the EMU framework for distributed computing environments, enabling scalable training across high-performance computing clusters while maintaining coordination efficiency. This extension demonstrates EMU’s potential for large-scale, computation-intensive MARL applications.
+- A rigorous parametric analysis of the state embedding threshold (δ) unveils its pivotal role in dictating convergence and stability across diverse memory embedding techniques (Random Projection, EmbNet, and dCAE).
+
 
 ## Getting Started
 
@@ -172,14 +181,6 @@ This work is based on the EMU methodology as described in:
           ```
 ##  Results
 The results of the experiments are saved in the `src/EMU_release_pymarl/results` directory. Some of the obtained results are included in the `results` directory of this repository.
-
-## Contributions and Extensions
-
-This repository includes:
-
-- A systematic replication of the EMU framework Na et al. (2024), focusing on reproducible experiments while documenting implementation challenges and resource requirements. This validation effort strengthens the theoretical foundations of episodic control in MARL.
-- Adaptation of the EMU framework for distributed computing environments, enabling scalable training across high-performance computing clusters while maintaining coordination efficiency. This extension demonstrates EMU’s potential for large-scale, computation-intensive MARL applications.
-- A rigorous parametric analysis of the state embedding threshold (δ) unveils its pivotal role in dictating convergence and stability across diverse memory embedding techniques (Random Projection, EmbNet, and dCAE).
 
 ## Acknowledgments
 
