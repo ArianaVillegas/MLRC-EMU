@@ -1,0 +1,86 @@
+{
+  "artifacts": [],
+  "command": "my_main",
+  "experiment": {
+    "base_dir": "/workspace/EMU/src/EMU_release_pymarl/src",
+    "dependencies": [
+      "numpy==1.23.1",
+      "PyYAML==5.3.1",
+      "sacred==0.8.5",
+      "torch==1.12.1"
+    ],
+    "mainfile": "main.py",
+    "name": "pymarl",
+    "repositories": [],
+    "sources": [
+      [
+        "main.py",
+        "_sources/main_f935da510d36a59ba27456b3f2c249cf.py"
+      ],
+      [
+        "run.py",
+        "_sources/run_f3917725416e8e1393a1527491252e92.py"
+      ],
+      [
+        "utils/logging.py",
+        "_sources/logging_dbae9b7001fb2435d067d770605d31e4.py"
+      ]
+    ]
+  },
+  "heartbeat": "2025-02-15T04:21:44.002763",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz",
+    "gpus": {
+      "driver_version": "560.35.03",
+      "gpus": [
+        {
+          "model": "Tesla T4",
+          "persistence_mode": true,
+          "total_memory": 15360
+        }
+      ]
+    },
+    "hostname": "g001",
+    "os": [
+      "Linux",
+      "Linux-4.18.0-553.22.1.el8_10.x86_64-x86_64-with-glibc2.17"
+    ],
+    "python_version": "3.8.20"
+  },
+  "meta": {
+    "command": "my_main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2025-02-13T04:22:23.111674",
+  "status": "RUNNING"
+}

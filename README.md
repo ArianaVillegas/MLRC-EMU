@@ -170,18 +170,8 @@ This work is based on the EMU methodology as described in:
           ```bash
           bash run_smac.sh {indexes of maps}
           ```
-
-
-### Running Experiments
-
-Experiments are organized in the `experiments/` folder. To run a specific experiment, follow these steps:
-
-1. [Step-by-step instructions for running an experiment, e.g.,]
-   ```bash
-   python src/train.py --config config/experiment_1.yaml
-   ```
-
-2. Results will be saved in the `results/` folder.
+##  Results
+The results of the experiments are saved in the `src/EMU_release_pymarl/results` directory. Some of the obtained results are included in the `results` directory of this repository.
 
 ## Contributions and Extensions
 
