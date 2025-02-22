@@ -19,15 +19,57 @@ This work is based on the EMU methodology as described in:
 
 ## Getting Started
 
-### Prerequisites
-
+### Local setup (without Google Research Football)
 1. Clone the repository:
    ```bash
    git clone https://github.com/ArianaVillegas/MLRC-EMU.git
-   cd mlrc-emu
+   cd MLRC-EMU
+   git checkout FabryzzioMezaBranch
    ```
+2. Install Python packages:
+   ```bash
+   conda create -n emu python=3.8 -y
+   conda activate emu
+   
+   bash scripts/setup/install_dependencies.sh
+    ```
+3. Set up StarCraft II  and SMAC:
+   ```bash
+    cd src
+    pip install -e EMU_smac_env
+  
+    cd EMU_release_pymarl
+    bash install_sc2.sh
+   ```
+4. Set the environment variables:
+   > **Note: Replace** PATH_TO_MLRC-EMU with the actual location where you cloned the repository.
+   ```bash
+   export SC2PATH='PATH_TO_MLRC-EMU/src/EMU_release_pymarl/3rdparty/StarCraftII'
+   ```
+5. Install additional dependencies:
+   ```bash
+   # Navigate to the root directory of the repository
+   bash scripts/setup/additional_dependencies.sh
+   ```
+6. Run the experiments:
+    1. In a local environment:
+         ```bash
+          # Navigate to the root directory of the repository
+          cd src/EMU_release_pymarl/
+          python3 src/main.py --config=EMU_sc2 --env-config=sc2 with env_args.map_name=5m_vs_6m save_model=True
+         ```
+    2. In a distributed environment (High Performance Computing (HPC) cluster with Slurm):
+          > **Note: Replace** PATH_TO_MLRC-EMU in the line 50 in 'scripts/khipu/run_smac.sh' with the actual location where you cloned the repository.
+       1. Run the following commands:
+          ```bash
+           # From the root directory of the repository
+           cd scripts/khipu
+          ```
+       2. The following command will run EMU (QPLEX) and EMU (CDS) with the indexes of the maps you want to run. The available maps are: 1c3s5z (1), 3s_vs_5z (2), 5m_vs_6m (3), 3s5z_vs_3s6z (4), 6h_vs_8z (5), MMM2 (6). Ej: bash run_smac.sh 1 2 3
+          ```bash
+          bash run_smac.sh {indexes of maps}
+          ```
 
-2. [Additional setup steps.]
 
 ### Running Experiments
 
