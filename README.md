@@ -44,9 +44,9 @@ Experiments are organized in the `experiments/` folder. To run a specific experi
 
 This repository includes:
 
-- The integration of Deep Q-Networks (DQN) to address more complex discrete scenarios. Using the iTHOR library, evaluate the performance of DQN in these scenarios by comparing the effectiveness of different episodic memory representation techniques: Autoencoder, Random Projection, and Embeddings. This comparison will highlight how memory representation impacts learning efficiency, policy performance, and overall task success.
-- 
-- 
+- A systematic replication of the EMU framework Na et al. (2024), focusing on reproducible experiments while documenting implementation challenges and resource requirements. This validation effort strengthens the theoretical foundations of episodic control in MARL.
+- Adaptation of the EMU framework for distributed computing environments, enabling scalable training across high-performance computing clusters while maintaining coordination efficiency. This extension demonstrates EMU’s potential for large-scale, computation-intensive MARL applications.
+- A rigorous parametric analysis of the state embedding threshold (δ) unveils its pivotal role in dictating convergence and stability across diverse memory embedding techniques (Random Projection, EmbNet, and dCAE).
 
 ## Acknowledgments
 
