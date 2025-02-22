@@ -19,7 +19,63 @@ This work is based on the EMU methodology as described in:
 
 ## Getting Started
 
-### Local setup (without Google Research Football)
+### Local Setup wih Docker
+1. Pull the Docker Image
+    ```shell
+    docker pull diegoran/emu:v2
+    ```
+2. Run the Docker Container
+   * With GPU Support (if available):
+
+     ```shell
+     docker run -it --gpus all diegoran/emu:v2
+     ```
+   * Without GPU Support:
+     ```shell
+     docker run -it diegoran/emu:v2
+     ```
+
+3. Start the Container and Access the Terminal
+    ```shell
+    docker start <container_id>
+    
+    docker exec -it <container_id> bash
+    ```
+
+4. Activate the Conda Environment
+    ```shell
+    source activate base
+    conda activate emu
+    ```
+
+5. Execute the Setup Script
+    ```shell
+    cd /workspace/EMU
+    git pull origin main
+    bash /workspace/EMU/docker/setup.sh
+    ```
+
+    ```shell
+    export SC2PATH='/workspace/EMU/src/EMU_release_pymarl/3rdparty/StarCraftII'
+    ```
+6. Run an experiment. 
+    ```shell
+    cd /workspace/EMU/src/EMU_release_pymarl/
+    ```
+    1. To train EMU(QPLEX) on SC2 setting tasks, run the following command. For EMU(CDS), please change config file to EMU_sc2_cds.
+       ```shell
+       # SC2 
+       python3 src/main.py --config=EMU_sc2 --env-config=sc2 with env_args.map_name=5m_vs_6m
+       ```
+    2. To train EMU(QPLEX) on Google Research Football setting tasks, run the following command. For EMU(CDS), please change config file to EMU_grf_cds.
+       ```shell
+       # GFootball
+       python3 src/main.py --config=EMU_grf --env-config=academy_3_vs_1_with_keeper
+       ```
+
+
+### Local Setup and High Performance Computing (HPC) Setup (without Google Research Football)
+> **Note**: The following instructions are for setting up the repository on a local machine or an HPC cluster without Google Research Football. For Google Research Football, please refer to the Docker setup instructions.
 1. Clone the repository:
    ```bash
    git clone https://github.com/ArianaVillegas/MLRC-EMU.git
