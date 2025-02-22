@@ -19,6 +19,51 @@ This work is based on the EMU methodology as described in:
 
 ## Getting Started
 
+### High Performance Computing (HPC) Setup with Apptainer 
+1. Build the container in sandbox mode (for writable access):
+    ```shell
+    apptainer build --sandbox my_container docker://diegoran/emu:v2
+    ```
+2. Start an interactive shell session with writable access:
+    ```shell
+    apptainer shell --writable my_container
+    ```
+3. Activate the Conda Environment
+    ```shell
+    source activate base
+    conda activate emu
+    ```
+
+4. Execute the Setup Script
+    ```shell
+    cd /workspace/EMU
+    git pull origin main
+    bash /workspace/EMU/docker/setup.sh
+    ```
+
+    ```shell
+    export SC2PATH='/workspace/EMU/src/EMU_release_pymarl/3rdparty/StarCraftII'
+    ```
+5. Run an experiment.
+   Before running the script, export the environment variables:
+   ```shell
+   # Set RESULTS_DIR to a writable directory outside the container, here will be saved the results of the experiments
+   export RESULTS_DIR="/home/user/gf_khipu_results/results_bind"
+   # Set CONTAINER_PATH to the path of the container
+   export CONTAINER_PATH="/home/user/khipu_gf/my_container"            
+   ```
+    1. Individual Experiment
+       ```shell
+       cd scripts/khipu
+       sbatch run_one.sh 
+       ```
+    2. Multiple Experiments. The following command will run EMU (QPLEX) and EMU (CDS) with the indexes of the maps you want to run. The available maps are: academy_3_vs_1_with_keeper (1), academy_counterattack_easy (2), academy_counterattack_hard (3). Ej: bash run.sh 1 2 3
+       ```bash
+       cd scripts/khipu
+       bash run.sh {indexes of maps}
+       ```
+       
+
 ### Local Setup wih Docker
 1. Pull the Docker Image
     ```shell
