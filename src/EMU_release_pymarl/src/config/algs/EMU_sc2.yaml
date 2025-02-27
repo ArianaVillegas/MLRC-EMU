@@ -4,7 +4,7 @@ adv_hypernet_embed: 64
 adv_hypernet_layers: 1
 agent: rnn_fast
 agent_output_type: q
-atol_memory: 0.013
+atol_memory: 0.00000013
 attend_reg_coef: 0.001
 buffer_size: 5000
 buffer_size_update: 5000
@@ -43,7 +43,9 @@ lambda_s: 0.1
 learner: qplex_curiosity_vdn_learner
 mac: fast_mac
 mask_dead: false
-memory_emb_type: 1
+decididor_exp: true
+guardar_exp: true
+memory_emb_type: 3
 mixer: dmaq_qatten
 mixing_embed_dim: 32
 n_head: 4

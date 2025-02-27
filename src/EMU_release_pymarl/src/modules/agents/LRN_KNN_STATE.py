@@ -42,7 +42,10 @@ letter = atol_mapping.get(atol_memory, "X")  # "X" si el valor no está en la ta
 # Crear el identificador (Ejemplo: B2, C3, etc.)
 experiment_id = f"{nombre_experiemnto}_{letter}{memory_emb_type}"
 
-# Definir la carpeta donde se guardará el archivo
+decididor_exp = config.get("decididor_exp")
+guardar_exp = config.get("guardar_exp")
+
+
 
 
 
@@ -129,16 +132,17 @@ class LRU_KNN_STATE:
              os.makedirs(SAVE_PATH)
         self.experiment_start_time = time.strftime("%Y%m%d_%H%M%S")  # AñoMesDía_HoraMinutoSegundo
         self.log_file = os.path.join(SAVE_PATH, f"EC_{experiment_id}_{self.experiment_start_time}.json")
-      
+        self.guardar_exp=guardar_exp 
+        self.decididor_exp=decididor_exp
+
         if not os.path.exists(self.log_file):
             data = {
-                "tiempo": {"inicio": time.time(), "fin": None},
-                "ejecuciones": [],
-                "penalizacion": {
-                    "decay_values": [],
-                    "penalizacion_values": [],
-                    "tiempo": []
-                }
+                "duracion": {"inicio": time.time(), "fin": None},
+                "guardar_exp":guardar_exp,
+                "decididor_exp":decididor_exp,
+                "atol_memory" : atol_memory,
+                "memory_emb_type":memory_emb_type
+
             }
             with open(self.log_file, "w") as json_file:
                 json.dump(data, json_file, indent=4)
@@ -190,29 +194,22 @@ class LRU_KNN_STATE:
         penalizacion = self.penalization_manager.penalizacion_sigmoide_mejorada(self.Ncall[ind])
 
         return penalizacion
-      
-
-    def peek_modified_EC(self,key, value_decay, xit, modify, global_state, cur_time):
+    
+    def peek_modified_EC(self, key, value_decay, xit, modify, global_state, cur_time):
+        with open(self.log_file, 'r') as f:
+            data = json.load(f)
         # input: key: global state
         # input: Rt, xi, modify
         # output: H(key_hat), xi(key_hat) 
-
-        ###
-        with open(self.log_file, "r") as json_file:
-            data = json.load(json_file)
-    
-        
-        
-
-        # Tiempo actual de ejecución
-        exec_time = time.time()       
-        
-        
 
         if modify == False:
             checkpoint = 1
 
         if self.curr_capacity==0 or self.build_tree == False:
+            data['duracion']["fin"]=time.time()
+
+            with open(self.log_file, 'w') as f:
+                json.dump(data, f, indent=4)
             return None, None, None
 
         dist, ind = self.tree.query([key], k=1) # pick nearest one # 1-1 projection? 
@@ -221,30 +218,10 @@ class LRU_KNN_STATE:
 
         # normalization
         key_norm = ((key - self.x_mu) / self.x_sigma) # check element-wise operation
-
+        bollea=np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol )
+        #print(bollea)
         #if np.allclose(key_embed_hat, key_embed, rtol=self.rtol, atol=self.atol ):
-        
-
-        if np.allclose(self.states_norm[ind], key_norm, rtol=self.rtol, atol=self.atol ):
-            diff_abs = np.abs(self.states_norm[ind] - key_norm)
-            tolerance = self.atol + self.rtol * np.abs(key_norm)
-
-            # **Registro de la ejecución**
-            registro = {
-                "tiempoDECAY": exec_time,
-                "vectores_comparados": {
-                    "vector1": self.states_norm[ind].tolist(),
-                    "vector2": key_norm.tolist()
-                },
-                "Diferencia_absoluta": diff_abs.tolist(),
-                "Tolerancia_permitida": tolerance.tolist(),
-
-                #"decay": value_decay.tolist(), 
-                "decay":value_decay.tolist() if value_decay is not None else []  # Lista vacía si value_decay es None
-                
-            }
-
-
+        if bollea:
             self.lru[ind] = self.tm # update its updated time            
             self.tm +=0.01
             if modify:
@@ -264,32 +241,72 @@ class LRU_KNN_STATE:
                         self.Nxi[ind]         = 1
                     self.tg[ind]          = cur_time
                 
-                else: # update Qval (value_decay: current Return)    
-                   
-                    Nuevo_incentivo = self.aumento_de_penalizacion(ind)
-                    Nuevo_incentivo = np.array(Nuevo_incentivo)
-                    print("valor deay ",value_decay)
-                    print("nuevo incentivo",Nuevo_incentivo)
+                else: # update Qval (value_decay: current Return)
+                    #decididor_exp: true
+                    #guardar_exp: false
 
-                    
-
-                    if value_decay_penalizado > self.q_values_decay[ind]: 
-                        self.q_values_decay[ind] = value_decay
-                        registro["penalizacion"] = Nuevo_incentivo 
-                        data["penalizacion"]["decay_values"].append(value_decay.tolist())
-                        data["penalizacion"]["penalizacion_values"].append(Nuevo_incentivo)
-                        data["penalizacion"]["tiempo"].append(exec_time)
-
+                    Nuevo_incentivo = th.tensor( self.aumento_de_penalizacion(ind), dtype=value_decay.dtype, device=value_decay.device)
+                    value_decay_penalizado =  value_decay - Nuevo_incentivo  
+                    #print("dalue decay",value_decay) 
+                    #print("dalue decay",value_decay_penalizado) 
+                    v1= value_decay_penalizado if self.guardar_exp else value_decay
+                    #print("v1",v1)
+                    v2=value_decay_penalizado if self.decididor_exp else value_decay 
+                    #print ("v2" ,v2)     
+                    #print("-----------------------------------------------")
+                    if v2 > self.q_values_decay[ind]: 
+                        self.q_values_decay[ind] = v1
                                     
             rcnt = float(self.Nxi[ind] / (self.Ncall[ind] + self.epsilon))
-            data["ejecuciones"].append(registro)
-            data["tiempo"]["fin"] = time.time()
-            with open(self.log_file, "w") as json_file:
-                json.dump(data, json_file, indent=4)
+            data['duracion']["fin"]=time.time()
+            with open(self.log_file, 'w') as f:
+                json.dump(data, f, indent=4)
             
+
             return self.q_values_decay[ind], float(self.xi[ind]), rcnt
-        
+        data['duracion']["fin"]=time.time()
+        with open(self.log_file, 'w') as f:
+                json.dump(data, f, indent=4)
+            
+
+
         return None, None, None
+
+
+    def add_modified_EC(self, key, value_decay, xi, global_state, cur_time):
+        if self.curr_capacity >= self.capacity:
+            # find the LRU entry
+            old_index = np.argmin(self.lru)
+            self.states[old_index] = key
+            self.states_norm[old_index] = (key - self.x_mu)/self.x_sigma # check element-wise operation
+            self.q_values_decay[old_index] = value_decay
+            self.global_states[old_index]  = global_state
+            self.xi[old_index] = xi
+            self.lru[old_index] = self.tm
+            if xi == 1 and self.args.flag_init_desirability == True:
+                self.Nxi[old_index]  = 1
+            else:
+                self.Nxi[old_index]  = 0
+            self.Ncall[old_index] = 1
+            self.tg[old_index] = cur_time
+        else:
+            self.states[self.curr_capacity] = key
+            self.states_norm[self.curr_capacity] = (key - self.x_mu)/self.x_sigma # check element-wise operation
+            self.global_states[self.curr_capacity]  = global_state
+            self.q_values_decay[self.curr_capacity] = value_decay            
+            self.xi[self.curr_capacity] = xi
+            self.lru[self.curr_capacity] = self.tm
+            if xi == 1  and self.args.flag_init_desirability == True:
+                self.Nxi[self.curr_capacity]  = 1
+            else:
+                self.Nxi[self.curr_capacity]  = 0
+            self.Ncall[self.curr_capacity] = 1
+            self.tg[self.curr_capacity] = cur_time
+            self.curr_capacity+=1
+        self.tm += 0.01
+
+    #.. original version ----------------------------------------------------------------------------------------------------------
+
 
     def add_modified_EC(self, key, value_decay, xi, global_state, cur_time):
         if self.curr_capacity >= self.capacity:

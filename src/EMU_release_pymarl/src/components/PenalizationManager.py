@@ -7,7 +7,7 @@ class PenalizationManager:
   
        
     def __init__(self, umbral_visitas=0, penalizacion_maxima=0.5, beta_penalizacion=0.0009):
-        self.umbral_visitas = 0
+        self.umbral_visitas = 10
         self.penalizacion_maxima = 0.5
         self.beta_penalizacion = 0.0009 #0.01 # Ajustado para mejor progresión
     def penalizacion_sigmoide(self, Ncall):
@@ -22,6 +22,7 @@ class PenalizationManager:
              numero= self.penalizacion_maxima * (1 - np.exp(-self.beta_penalizacion * (Ncall - self.umbral_visitas)))
             
              return numero
+        return 0
 
 
     def penalizacion_lineal(self, Ncall):

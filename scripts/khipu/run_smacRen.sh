@@ -68,7 +68,6 @@ for algorithm in "${!experiments[@]}"; do
 #SBATCH --mem=$SBATCH_MEM
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=$SBATCH_MAIL
-#SBATCH --nodelist=n005
 
 source ~/.bashrc
 source activate mi_entorno
@@ -81,7 +80,7 @@ EOT
 
             chmod +x "$SCRIPT_NAME"
             sbatch "$SCRIPT_NAME"
-            sleep 20  # To avoid submitting jobs too fast
+            sleep 5  # To avoid submitting jobs too fast
         fi
     done
 done

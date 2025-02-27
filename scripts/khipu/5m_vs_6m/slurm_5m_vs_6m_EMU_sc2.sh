@@ -9,7 +9,6 @@
 #SBATCH --mem=7G
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=renzo.felix@utec.edu.pe
-#SBATCH --nodelist=n005
 
 source ~/.bashrc
 source activate mi_entorno
